@@ -7,7 +7,7 @@ if (!POSTGRES_URL) {
   throw new Error("POSTGRES_URL is not set");
 }
 
-config({ path: ".env.local" });
+config({ path: ".env" });
 
 export default defineConfig({
   schema: "./server/db/schema.ts",

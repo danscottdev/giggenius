@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState } from "react";
 import {
   Table,
@@ -8,9 +10,11 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { ChevronDown, ChevronRight } from "lucide-react";
+import { Job } from "@/server/db/schema";
+import { Button } from "./ui/button";
 
 interface JobFeedProps {
-  jobs: Object[];
+  jobs: Job[];
 }
 
 function JobFeed({ jobs }: JobFeedProps) {
@@ -25,6 +29,8 @@ function JobFeed({ jobs }: JobFeedProps) {
     }
     setExpandedRows(newExpandedRows);
   };
+
+  // TODO: Fetch Match data for each job ID
 
   return (
     <div className="w-full">
@@ -53,27 +59,43 @@ function JobFeed({ jobs }: JobFeedProps) {
                     <ChevronRight className="h-4 w-4" />
                   )}
                 </TableCell>
-                <TableCell>{job.title}</TableCell>
-                <TableCell>{job.summary}</TableCell>
-                <TableCell>{job.match}</TableCell>
-                <TableCell>{job.date}</TableCell>
-                <TableCell>{job.seen}</TableCell>
+                <TableCell>{job.upwk_title}</TableCell>
+                <TableCell>{job.upwk_description}</TableCell>
+                <TableCell>MATCH</TableCell>
+                <TableCell>{job.createdAt.toLocaleString()}</TableCell>
+                <TableCell>{job.is_seen_by_user}</TableCell>
               </TableRow>
               {expandedRows.has(job.id) && (
                 <TableRow>
-                  <TableCell colSpan={4} className="bg-gray-50">
-                    <div className="p-4">
-                      {/* Expanded content goes here */}
-                      <div className="space-y-2">
-                        <p className="text-sm text-gray-700">
-                          <span className="font-medium">Full Description:</span>{" "}
-                          {job.description}
-                        </p>
+                  <TableCell colSpan={6} className="bg-gray-50">
+                    <div className="p-0 flex flex-row justify-between align-center">
+                      <div className="w-full border p-4">
+                        <h3 className="font-bold">{job.upwk_title}</h3>
+                        <p>{job.upwk_description}</p>
                         <p className="text-sm text-gray-700">
                           <span className="font-medium">Budget:</span>{" "}
-                          {job.budget}
+                          {job.upwk_budget}
                         </p>
-                        {/* Add any additional expanded content here */}
+                        <div className="mt-4">
+                          <h4 className="font-bold">Client Info</h4>
+                          <p>Client Info Here</p>
+                          <p>Client Info Here</p>
+                          <p>Client Info Here</p>
+                        </div>
+                      </div>
+                      <div className="w-96 border p-4">
+                        <p className="font-bold text-center mb-2">
+                          Match Strength: Strong Match
+                        </p>
+                        <p className="border border-gray-200 h-32 bg-gray-100 p-3">
+                          Match Analysis Ipsum
+                        </p>
+                        <Button className="w-full mt-2">
+                          Rate Match Analysis
+                        </Button>
+                        <Button className="w-full mt-2">
+                          Generate Proposal
+                        </Button>
                       </div>
                     </div>
                   </TableCell>

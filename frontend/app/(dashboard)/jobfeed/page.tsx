@@ -1,24 +1,11 @@
-"use client";
-
 import JobFeed from "@/components/JobFeed";
 import { Button } from "@/components/ui/button";
+import { getJobsForUser } from "@/server/queries";
 import { RotateCcw } from "lucide-react";
 import React from "react";
 
-function JobFeedPage() {
-  const jobs = [
-    {
-      id: 1,
-      title: "Web Developer",
-      summary:
-        "Looking for an experienced web developer to help build a custom wordpress...",
-      match: "Strong",
-      date: "2 days ago",
-      seen: "New",
-      description: "Full description Here",
-      budget: "$1000",
-    },
-  ];
+export default async function JobFeedPage() {
+  const jobs = await getJobsForUser();
 
   return (
     <div className="w-full">
@@ -28,15 +15,14 @@ function JobFeedPage() {
             <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold">
               My Job Feed
             </h1>
-            <p className="text-sm sm:text-base text-gray-500">
-              Jobs Fetched from Upwork
-            </p>
+            <span className="text-xs text-gray-500 italic">
+              {/* TODO: Update to pull last actual fetch timestamp */}
+              Last Fetched from Upwork: {new Date().toLocaleString()}
+            </span>
           </div>
           <div>
-            <span className="text-xs text-gray-500 italic">
-              Last Fetch: {new Date().toLocaleString()}
-            </span>
             <form action="#" className="w-full mt-1">
+              {/* TODO: Update to actually trigger fetch API */}
               <Button className="rounded-xl text-base w-full">
                 <RotateCcw className="w-4 h-4 mr-1" strokeWidth={3} />
                 Fetch New Listings
@@ -45,10 +31,7 @@ function JobFeedPage() {
           </div>
         </div>
         <JobFeed jobs={jobs} />
-        {/* <JobFeed jobs={jobs} /> */}
       </div>
     </div>
   );
 }
-
-export default JobFeedPage;
