@@ -12,6 +12,7 @@ import {
 import { ChevronDown, ChevronRight } from "lucide-react";
 import { Job } from "@/server/db/schema";
 import { Button } from "./ui/button";
+import { truncateText } from "@/lib/utils";
 
 interface JobFeedProps {
   jobs: Job[];
@@ -62,7 +63,7 @@ function JobFeed({ jobs }: JobFeedProps) {
                   )}
                 </TableCell>
                 <TableCell>{job.upwk_title}</TableCell>
-                <TableCell>{job.upwk_description}</TableCell>
+                <TableCell>{truncateText(job.upwk_description, 170)}</TableCell>
                 <TableCell>MATCH</TableCell>
                 <TableCell>Created At</TableCell>
                 <TableCell>{job.is_seen_by_user}</TableCell>
