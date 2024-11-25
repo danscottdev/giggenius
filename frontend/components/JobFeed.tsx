@@ -20,6 +20,8 @@ interface JobFeedProps {
 function JobFeed({ jobs }: JobFeedProps) {
   const [expandedRows, setExpandedRows] = useState(new Set());
 
+  console.log("JOB FEED:" + jobs);
+
   const toggleRow = (rowId: string) => {
     const newExpandedRows = new Set(expandedRows);
     if (newExpandedRows.has(rowId)) {
@@ -62,7 +64,7 @@ function JobFeed({ jobs }: JobFeedProps) {
                 <TableCell>{job.upwk_title}</TableCell>
                 <TableCell>{job.upwk_description}</TableCell>
                 <TableCell>MATCH</TableCell>
-                <TableCell>{job.createdAt.toLocaleString()}</TableCell>
+                <TableCell>Created At</TableCell>
                 <TableCell>{job.is_seen_by_user}</TableCell>
               </TableRow>
               {expandedRows.has(job.id) && (
