@@ -19,7 +19,7 @@ function JobFeedContainer() {
         break;
       case "strong":
         // TODO: Add logic to check for match strength here
-        setFilteredJobs(jobs.filter((job) => false));
+        // setFilteredJobs(jobs.filter((job) => false));
         break;
       case "all":
       default:

@@ -43,7 +43,7 @@ export async function POST(request: Request) {
   console.log("New match analysis:", newMatchAnalysis);
 
   // Update the job in the database to set match_analysis_status to true
-  const [updatedJob] = await db
+  await db
     .update(jobsTable)
     .set({ match_analysis_status: "complete" })
     .where(eq(jobsTable.id, body.job_id))

@@ -3,7 +3,7 @@ import { promises as fs } from "fs";
 import path from "path";
 import { NextResponse } from "next/server";
 import { db } from "@/server/db";
-import { jobsTable } from "@/server/db/schema";
+import { Job, jobsTable } from "@/server/db/schema";
 
 export async function POST() {
   try {
@@ -20,7 +20,7 @@ export async function POST() {
 
     // Insert data into database
     await db.insert(jobsTable).values(
-      jobsData.map((job: any) => ({
+      jobsData.map((job: Job) => ({
         user_id: "1",
         upwk_title: job.upwk_title,
         upwk_url: job.upwk_url,

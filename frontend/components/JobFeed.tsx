@@ -13,7 +13,6 @@ import { ChevronDown, ChevronRight } from "lucide-react";
 import { Job } from "@/server/db/schema";
 import { Button } from "./ui/button";
 import { truncateText } from "@/lib/utils";
-import { getMatchesForJob } from "@/server/queries";
 import axios from "axios";
 
 interface JobFeedProps {
