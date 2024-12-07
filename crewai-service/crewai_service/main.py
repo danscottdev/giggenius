@@ -2,10 +2,10 @@ import asyncio
 from collections import defaultdict
 from datetime import datetime
 
-from analyze_jobs_matches.api_client import fetch_jobs, update_job_details
-from analyze_jobs_matches.config import config
-from analyze_jobs_matches.job_processor import process_job
-from analyze_jobs_matches.logger import logger
+from crewai_service.api_client import fetch_jobs, update_job_details
+from crewai_service.config import config
+from crewai_service.job_processor import process_job
+from crewai_service.logger import logger
 
 # from src.match_to_proposal.crew import MatchToProposalCrew
 

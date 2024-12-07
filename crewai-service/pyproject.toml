@@ -1,7 +1,7 @@
 [tool.poetry]
-name = "analyze_jobs_matches"
+name = "crewai_service"
 version = "0.1.0"
-description = "analyze_jobs_matches using crewAI"
+description = "crewai_service using crewAI"
 authors = ["Your Name <you@example.com>"]
 
 [tool.poetry.dependencies]
@@ -10,8 +10,8 @@ crewai = { extras = ["tools"], version = "^0.35.8" }
 crewai-tools = "^0.4.6"
 
 [tool.poetry.scripts]
-analyze_jobs_matches = "analyze_jobs_matches.main:run"
-train = "analyze_jobs_matches.main:train"
+crewai_service = "crewai_service.main:main"
+train = "crewai_service.main:train"
 
 [build-system]
 requires = ["poetry-core"]

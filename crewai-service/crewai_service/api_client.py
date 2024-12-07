@@ -4,9 +4,9 @@ from typing import Any, Dict, List, Optional
 import aiohttp
 
 # import tiktoken
-from analyze_jobs_matches.config import HEADERS, config
-from analyze_jobs_matches.logger import logger
-from analyze_jobs_matches.models import Analysis, JobToAnalyze
+from crewai_service.config import HEADERS, config
+from crewai_service.logger import logger
+from crewai_service.models import Analysis, JobToAnalyze
 
 
 class ApiError(Exception):

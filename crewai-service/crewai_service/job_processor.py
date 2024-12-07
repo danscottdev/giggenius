@@ -1,12 +1,12 @@
 import asyncio
 
-from analyze_jobs_matches.api_client import (  # fetch_asset,; fetch_asset_file,; update_asset_content,
+from crewai_service.api_client import (  # fetch_asset,; fetch_asset_file,; update_asset_content,
     update_job_details,
     update_job_heartbeat,
 )
-from analyze_jobs_matches.config import config
-from analyze_jobs_matches.logger import logger
-from analyze_jobs_matches.models import JobToAnalyze
+from crewai_service.config import config
+from crewai_service.logger import logger
+from crewai_service.models import JobToAnalyze
 
 
 async def process_job(job: JobToAnalyze) -> None:
