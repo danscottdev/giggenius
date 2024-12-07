@@ -9,4 +9,4 @@ RUN pip install poetry \
 
 COPY . /app
 
-CMD ["poetry", "run", "analyze-jobs-matches"]
+CMD ["poetry", "run", "crewai-service"]
