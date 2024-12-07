@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Table,
   TableBody,
@@ -13,15 +13,51 @@ import { ChevronDown, ChevronRight } from "lucide-react";
 import { Job } from "@/server/db/schema";
 import { Button } from "./ui/button";
 import { truncateText } from "@/lib/utils";
+import { getMatchesForJob } from "@/server/queries";
+import axios from "axios";
 
 interface JobFeedProps {
   jobs: Job[];
 }
 
+interface Match {
+  match_strength: number;
+  match_analysis: string;
+}
+
 function JobFeed({ jobs }: JobFeedProps) {
   const [expandedRows, setExpandedRows] = useState(new Set());
+  const [matchData, setMatchData] = useState<{
+    [key: string]: { match_strength: number; match_analysis: string };
+  }>({});
 
-  console.log("JOB FEED:" + jobs);
+  useEffect(() => {
+    const fetchMatchData = async () => {
+      const matches: {
+        [key: string]: { match_strength: number; match_analysis: string };
+      } = {};
+      for (const job of jobs) {
+        const matchArray = await axios.get<Match[]>(
+          `/api/jobs/analyze?job_id=${job.id}`
+        );
+
+        const matchData = matchArray.data;
+
+        if (matchData.length > 0) {
+          const match = matchData[0];
+          matches[job.id] = {
+            match_strength: match.match_strength,
+            match_analysis: match.match_analysis,
+          };
+        }
+      }
+      setMatchData(matches);
+    };
+
+    fetchMatchData();
+  }, [jobs]);
+
+  // console.log("JOB FEED:" + jobs);
 
   const toggleRow = (rowId: string) => {
     const newExpandedRows = new Set(expandedRows);
@@ -32,8 +68,6 @@ function JobFeed({ jobs }: JobFeedProps) {
     }
     setExpandedRows(newExpandedRows);
   };
-
-  // TODO: Fetch Match data for each job ID
 
   return (
     <div className="w-full">
@@ -64,7 +98,7 @@ function JobFeed({ jobs }: JobFeedProps) {
                 </TableCell>
                 <TableCell>{job.upwk_title}</TableCell>
                 <TableCell>{truncateText(job.upwk_description, 170)}</TableCell>
-                <TableCell>MATCH</TableCell>
+                <TableCell>{matchData[job.id]?.match_strength} / 5</TableCell>
                 <TableCell>Created At</TableCell>
                 <TableCell>{job.is_seen_by_user}</TableCell>
               </TableRow>
@@ -86,12 +120,12 @@ function JobFeed({ jobs }: JobFeedProps) {
                           <p>Client Info Here</p>
                         </div>
                       </div>
-                      <div className="w-96 border p-4">
+                      <div className="w-1/2 border p-4">
                         <p className="font-bold text-center mb-2">
-                          Match Strength: Strong Match
+                          Match Strength: {matchData[job.id]?.match_strength}
                         </p>
-                        <p className="border border-gray-200 h-32 bg-gray-100 p-3">
-                          Match Analysis Ipsum
+                        <p className="border border-gray-200 bg-gray-100 p-3">
+                          Match Analysis: {matchData[job.id]?.match_analysis}
                         </p>
                         <Button className="w-full mt-2">
                           Rate Match Analysis

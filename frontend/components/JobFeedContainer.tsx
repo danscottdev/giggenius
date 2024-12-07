@@ -33,7 +33,7 @@ function JobFeedContainer() {
     const fetchJobsFromDB = async () => {
       try {
         console.log("Fetching jobs from DB (component)...");
-        const response = await axios.get<Job[]>("/api/jobs"); // New endpoint for DB fetch
+        const response = await axios.get<Job[]>("/api/jobs");
         setJobs(response.data);
       } catch (error) {
         console.error("Failed to fetch jobs:", error);
@@ -46,11 +46,57 @@ function JobFeedContainer() {
   const handleSyncJobs = async () => {
     try {
       await axios.post("/api/import-jobs");
-      // Refresh jobs list after sync
       const response = await axios.get<Job[]>("/api/jobs");
       setJobs(response.data);
     } catch (error) {
       console.error("Failed to sync jobs:", error);
+    }
+  };
+
+  const handleCrewTrigger = async () => {
+    console.log("Triggering crew...");
+    try {
+      // Grab 1 Job from db
+      const jobResponse = await axios.get<Job[]>("/api/jobs");
+      // const job = jobResponse.data[0];
+
+      // From jobResponse.data, pick the first job that has match_analysis_status === null
+      const job = jobResponse.data.find((job) => !job.match_analysis_status);
+
+      if (!job) {
+        console.log("No jobs with match_analysis_status === null found.");
+        return;
+      }
+
+      console.log("Job:", job);
+
+      // POST request to localhost:8000/trigger
+      console.log("Triggering crew... 1");
+      console.log("Job:", job);
+      const crewResponse = await axios.post(
+        "http://localhost:8000/trigger",
+        job
+      );
+      console.log("Crew response:", crewResponse.data);
+
+      // add job_id to crewResponse.data
+      crewResponse.data.job_id = job.id;
+
+      // convert crewResponse.data to JSON
+      const crewData = JSON.stringify(crewResponse.data);
+      console.log("Crew data:", crewData);
+
+      const matchResponse = await axios.post("/api/jobs/analyze", crewData);
+
+      console.log("Match response:", matchResponse.data);
+    } catch (error) {
+      console.error("Failed to trigger crew:", error);
+    } finally {
+      console.log("Crew run complete.");
+
+      // Refresh jobs list after crew run
+      // const response = await axios.get<Job[]>("/api/jobs");
+      // setJobs(response.data);
     }
   };
 
@@ -70,6 +116,12 @@ function JobFeedContainer() {
             {/* TODO: Update to pull last actual fetch timestamp */}
             Last Fetched from Upwork: 2024-11-22
           </span>
+          <form action={handleCrewTrigger}>
+            <Button className="bg-emerald-600 hover:bg-emerald-700 text-white">
+              <RotateCcw className="w-4 h-4 mr-1" strokeWidth={3} />
+              Run Crew Analysis
+            </Button>
+          </form>
         </div>
       </div>
       <JobFeed jobs={filteredJobs} />

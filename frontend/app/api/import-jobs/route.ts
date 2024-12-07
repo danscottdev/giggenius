@@ -21,7 +21,7 @@ export async function POST() {
     // Insert data into database
     await db.insert(jobsTable).values(
       jobsData.map((job: any) => ({
-        userId: "1",
+        user_id: "1",
         upwk_title: job.upwk_title,
         upwk_url: job.upwk_url,
         upwk_description: job.upwk_description,
