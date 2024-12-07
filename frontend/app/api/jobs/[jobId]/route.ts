@@ -33,8 +33,8 @@ export async function PATCH(
   // Make a DB request to update the project title
   const updatedProject = await db
     .update(jobsTable)
-    .set({ title })
-    .where(and(eq(jobsTable.userId, userId), eq(jobsTable.id, params.jobId)))
+    .set({ upwk_title: title })
+    .where(and(eq(jobsTable.user_id, userId), eq(jobsTable.id, params.jobId)))
     .returning();
 
   if (updatedProject.length === 0) {
@@ -48,14 +48,15 @@ export async function DELETE(
   request: NextRequest,
   { params }: { params: { jobId: string } }
 ) {
-  const { userId } = getAuth(request);
-  if (!userId) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  const userId = "1";
+  // const { userId } = getAuth(request);
+  // if (!userId) {
+  //   return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  // }
 
   const deletedProject = await db
     .delete(jobsTable)
-    .where(and(eq(jobsTable.userId, userId), eq(jobsTable.id, params.jobId)))
+    .where(and(eq(jobsTable.user_id, userId), eq(jobsTable.id, params.jobId)))
     .returning();
 
   if (deletedProject.length === 0) {
