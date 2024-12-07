@@ -106,7 +106,6 @@ function JobFeedContainer() {
         <JobFilterToggle onFilterChange={handleFilterChange} />
         <div className="w-1/3 justify-end">
           <form action={handleSyncJobs}>
-            {/* TODO: Update to actually trigger fetch API */}
             <Button className="bg-emerald-600 hover:bg-emerald-700 text-white">
               <RotateCcw className="w-4 h-4 mr-1" strokeWidth={3} />
               Fetch New Listings
