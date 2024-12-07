@@ -56,9 +56,47 @@ export const matchesTableRelations = relations(matchesTable, ({ one }) => ({
   }),
 }));
 
+export const matchProcessingTasksTable = pgTable("match_processing_jobs", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  matchId: uuid("match_id")
+    .notNull()
+    .unique()
+    .references(() => matchesTable.id, { onDelete: "cascade" }),
+  jobId: uuid("job_id")
+    .notNull()
+    .references(() => jobsTable.id, { onDelete: "cascade" }),
+  status: text("status").notNull(),
+  errorMessage: text("error_message"),
+  attempts: integer("attempts").notNull().default(0),
+  lastHeartBeat: timestamp("last_heart_beat").notNull().defaultNow(),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at")
+    .notNull()
+    .defaultNow()
+    .$onUpdate(() => new Date()),
+});
+
+export const matchProcessingTasksTableRelations = relations(
+  matchProcessingTasksTable,
+  ({ one }) => ({
+    asset: one(matchesTable, {
+      fields: [matchProcessingTasksTable.matchId],
+      references: [matchesTable.id],
+    }),
+    project: one(jobsTable, {
+      fields: [matchProcessingTasksTable.jobId],
+      references: [jobsTable.id],
+    }),
+  })
+);
+
 // Types
 export type Job = typeof jobsTable.$inferSelect;
 export type InsertJob = typeof jobsTable.$inferInsert;
 
 export type Match = typeof matchesTable.$inferSelect;
 export type InsertMatch = typeof matchesTable.$inferInsert;
+
+export type MatchProcessingTask = typeof matchProcessingTasksTable.$inferSelect;
+export type InsertMatchProcessingTask =
+  typeof matchProcessingTasksTable.$inferInsert;
