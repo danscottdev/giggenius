@@ -1,13 +1,15 @@
 import { db } from "@/server/db";
 import { matchProcessingTasksTable } from "@/server/db/schema";
-import { eq, inArray } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 
-const updateMatchTaskSchema = z.object({
+const updateTaskSchema = z.object({
+  id: z.string(),
+  job_id: z.string(),
   status: z
     .enum([
-      "created",
+      "new",
       "in_progress",
       "failed",
       "completed",
@@ -16,86 +18,79 @@ const updateMatchTaskSchema = z.object({
     .optional(),
   error_message: z.string().optional(),
   attempts: z.number().optional(),
-  last_heart_beat: z.string().optional(),
+  last_heart_beat: z.date().optional(),
+  created_at: z.date().optional(),
+  updated_at: z.date().optional(),
 });
 
 export async function GET() {
-  console.log("Fetching match analysis tasks that are not in a terminal state");
+  // Database query to matchProcessingTasks table to return all rows with status "new"
 
   try {
-    const availableTasks = await db
+    console.log(
+      "Fetching all match analysis tasks that are not in a terminal state"
+    );
+    const tasks = await db
       .select()
       .from(matchProcessingTasksTable)
-      .where(
-        inArray(matchProcessingTasksTable.status, [
-          "created",
-          "failed",
-          "in_progress",
-        ])
-      )
+      .where(eq(matchProcessingTasksTable.status, "new"))
       .execute();
-
-    return NextResponse.json(availableTasks);
+    return NextResponse.json(tasks);
   } catch (error) {
-    console.error("Error fetching match analysis tasks", error);
     return NextResponse.json(
-      { error: "Error fetching match analysis tasks" },
+      { error: "Failed to fetch tasks: " + error },
       { status: 500 }
     );
   }
 }
 
-export async function PATCH(request: NextRequest) {
-  try {
-    const { searchParams } = new URL(request.url);
-    const jobId = searchParams.get("jobId");
+export async function PATCH(
+  request: NextRequest,
+  { params }: { params: { taskId: string } }
+) {
+  console.log("Updating task... PATCH");
+  // Check to make sure person is authorized to edit this project
+  // const { userId } = getAuth(request);
+  //   const userId = "1";
+  // if (!userId) {
+  //   return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  // }
 
-    if (!jobId) {
-      return NextResponse.json(
-        { error: "Missing jobId parameter" },
-        { status: 400 }
-      );
-    }
-
-    const body = await request.json();
-    const validationResult = updateMatchTaskSchema.safeParse(body);
-
-    if (!validationResult.success) {
-      return NextResponse.json(
-        {
-          error: "Invalid request body",
-          errors: validationResult.error.errors,
-        },
-        { status: 400 }
-      );
-    }
-
-    const { status, error_message, attempts, last_heart_beat } =
-      validationResult.data;
-
-    const updatedJob = await db
-      .update(matchProcessingTasksTable)
-      .set({
-        status,
-        error_message,
-        attempts,
-        last_heart_beat: last_heart_beat
-          ? new Date(last_heart_beat)
-          : undefined,
-      })
-      .where(eq(matchProcessingTasksTable.id, jobId))
-      .returning();
-
-    if (updatedJob.length === 0) {
-      return NextResponse.json({ error: "Job not found" }, { status: 404 });
-    }
-
-    return NextResponse.json(updatedJob[0]);
-  } catch (error) {
-    console.error("Error updating asset processing job", error);
+  const body = await request.json();
+  const validatedData = updateTaskSchema.safeParse(body);
+  if (!validatedData.success) {
+    console.log("Patch Request data validation FAILED!");
     return NextResponse.json(
-      { error: "Error updating asset processing job" },
-      { status: 500 }
+      { error: validatedData.error.errors },
+      { status: 400 }
     );
   }
+
+  console.log("Validated data:", validatedData.data);
+
+  // Make a DB request to update the project title
+  const updatedTask = await db
+    .update(matchProcessingTasksTable)
+    .set({
+      status: validatedData.data.status,
+      error_message: validatedData.data.error_message,
+      attempts: validatedData.data.attempts,
+      last_heart_beat: validatedData.data.last_heart_beat,
+      updated_at: new Date(),
+    })
+    .where(
+      and(
+        // eq(matchProcessingTasksTable.user_id, userId),
+        eq(matchProcessingTasksTable.id, params.taskId)
+      )
+    )
+    .returning();
+
+  if (updatedTask.length === 0) {
+    return NextResponse.json({ error: "Task not found" }, { status: 404 });
+  }
+
+  console.log("Task patch update successful!");
+
+  return NextResponse.json(updatedTask[0]);
 }

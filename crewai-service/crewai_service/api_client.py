@@ -18,7 +18,7 @@ class ApiError(Exception):
 
 async def fetch_tasks() -> List[MatchProcessingTask]:
     try:
-        url = f"{config.API_BASE_URL}/jobs/analyze/tasks"
+        url = f"{config.API_BASE_URL}/match-processing-task"
 
         async with aiohttp.ClientSession() as session:
             async with session.get(url, headers=HEADERS) as response:
@@ -45,7 +45,7 @@ async def fetch_tasks() -> List[MatchProcessingTask]:
 async def update_task_details(task_id: str, update_data: Dict[str, Any]) -> None:
     data = {**update_data, "last_heart_beat": datetime.now().isoformat()}
     try:
-        url = f"{config.API_BASE_URL}/jobs/analyze/tasks?taskId={task_id}"
+        url = f"{config.API_BASE_URL}/match-processing-task?taskId={task_id}"
         async with aiohttp.ClientSession() as session:
             async with session.patch(url, json=data, headers=HEADERS) as response:
                 response.raise_for_status()
