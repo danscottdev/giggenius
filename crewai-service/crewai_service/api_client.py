@@ -6,7 +6,7 @@ import aiohttp
 # import tiktoken
 from crewai_service.config import HEADERS, config
 from crewai_service.logger import logger
-from crewai_service.models import Analysis, JobToAnalyze
+from crewai_service.models import JobToAnalyze, MatchAnalysis, MatchProcessingTask
 
 
 class ApiError(Exception):
@@ -16,50 +16,52 @@ class ApiError(Exception):
         super().__init__(self.message)
 
 
-async def fetch_jobs() -> List[JobToAnalyze]:
+async def fetch_tasks() -> List[MatchProcessingTask]:
     try:
-        url = f"{config.API_BASE_URL}/jobs"
+        url = f"{config.API_BASE_URL}/jobs/analyze/tasks"
 
         async with aiohttp.ClientSession() as session:
             async with session.get(url, headers=HEADERS) as response:
                 if response.status == 200:
+                    logger.info(f"Fetching analysis tasks...")
                     data = await response.json()
+                    logger.info(f"Tasks fetched: {data}")
 
                     # Parse the JSON data into JobToAnalyze instances
-                    jobs = [JobToAnalyze(**item) for item in data]
-                    return jobs
+                    tasks = [MatchProcessingTask(**item) for item in data]
+                    return tasks
 
                 else:
-                    logger.error(f"Error fetching jobs: {response.status}")
-                    logger.error(f"Error fetching jobs: {response.text}")
-                    logger.error(f"Error fetching jobs: {url}")
+                    logger.error(f"Error fetching tasks: {response.status}")
+                    logger.error(f"Error fetching tasks: {response.text}")
+                    logger.error(f"Error fetching tasks: {url}")
                     return []
     except aiohttp.ClientError as error:
-        logger.error(f"Error fetching jobs: {error}")
-        logger.error(f"Error fetching jobs: {url}")
+        logger.error(f"Error fetching tasks: {error}")
+        logger.error(f"Error fetching tasks: {url}")
         return []
 
 
-async def update_job_details(job_id: str, update_data: Dict[str, Any]) -> None:
-    data = {**update_data, "lastHeartBeat": datetime.now().isoformat()}
+async def update_task_details(task_id: str, update_data: Dict[str, Any]) -> None:
+    data = {**update_data, "last_heart_beat": datetime.now().isoformat()}
     try:
-        url = f"{config.API_BASE_URL}/match-processing-task?jobId={job_id}"
+        url = f"{config.API_BASE_URL}/jobs/analyze/tasks?taskId={task_id}"
         async with aiohttp.ClientSession() as session:
             async with session.patch(url, json=data, headers=HEADERS) as response:
                 response.raise_for_status()
     except aiohttp.ClientError as error:
-        logger.error(f"Failed to update job details for job {job_id}: {error}")
+        logger.error(f"Failed to update task details for task {task_id}: {error}")
 
 
-async def update_job_heartbeat(job_id: str) -> None:
+async def update_task_heartbeat(task_id: str) -> None:
     try:
-        url = f"{config.API_BASE_URL}/match-processing-task?jobId={job_id}"
+        url = f"{config.API_BASE_URL}/match-processing-task?taskId={task_id}"
         data = {"lastHeartBeat": datetime.now().isoformat()}
         async with aiohttp.ClientSession() as session:
             async with session.patch(url, json=data, headers=HEADERS) as response:
                 response.raise_for_status()
     except aiohttp.ClientError as error:
-        logger.error(f"Failed to update job heartbeat for job {job_id}: {error}")
+        logger.error(f"Failed to update task heartbeat for task {task_id}: {error}")
 
 
 # async def fetch_asset(asset_id: str) -> Optional[Asset]:

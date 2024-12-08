@@ -2,10 +2,10 @@ import asyncio
 from collections import defaultdict
 from datetime import datetime
 
-from crewai_service.api_client import fetch_jobs, update_job_details
+from crewai_service.api_client import fetch_tasks, update_task_details
 from crewai_service.config import config
-from crewai_service.job_processor import process_job
 from crewai_service.logger import logger
+from crewai_service.task_processor import process_task
 
 # from src.match_to_proposal.crew import MatchToProposalCrew
 
@@ -33,111 +33,112 @@ from crewai_service.logger import logger
 #####################################################
 
 
-async def job_fetcher(job_queue: asyncio.Queue, jobs_pending_or_in_progress: set):
+async def task_fetcher(task_queue: asyncio.Queue, tasks_pending_or_in_progress: set):
     while True:
         try:
             current_time = datetime.now().timestamp()
-            logger.info(f"Fetching jobs: {current_time}")
-            jobs = await fetch_jobs()
+            logger.info(f"Fetching tasks: {current_time}")
+            tasks = await fetch_tasks()
 
-            for job in jobs:
-                if job.status == "in_progress" and job.lastHeartBeat:
-                    last_heartbeat_time = job.lastHeartBeat.timestamp()
+            for task in tasks:
+                logger.info(f"Task: {task.id}")
+                if task.status == "new" and task.last_heart_beat:
+                    last_heartbeat_time = task.last_heart_beat.timestamp()
                     time_since_last_heartbeat = abs(current_time - last_heartbeat_time)
                     logger.info(
-                        f"Time since last heartbeat for job {job.id}: {time_since_last_heartbeat}"
+                        f"Time since last heartbeat for task {task.id}: {time_since_last_heartbeat}"
                     )
 
-                    if time_since_last_heartbeat > config.STUCK_JOB_THRESHOLD_SECONDS:
-                        logger.info(f"Job {job.id} is stuck. Failing job.")
-                        await update_job_details(
-                            job.id,
+                    if time_since_last_heartbeat > config.STUCK_TASK_THRESHOLD_SECONDS:
+                        logger.info(f"Task {task.id} is stuck. Failing task.")
+                        await update_task_details(
+                            task.id,
                             {
                                 "status": "failed",
-                                "errorMessage": "Job is stuck - no heartbeat received recently",
-                                "attempts": job.attempts + 1,
+                                "error_message": "Task is stuck - no heartbeat received recently",
+                                "attempts": task.attempts + 1,
                             },
                         )
-                        if job.id in jobs_pending_or_in_progress:
-                            jobs_pending_or_in_progress.remove(job.id)
+                        if task.id in tasks_pending_or_in_progress:
+                            tasks_pending_or_in_progress.remove(task.id)
 
-                elif job.status in ["created", "failed"]:
-                    if job.attempts >= config.MAX_JOB_ATTEMPTS:
+                elif task.status in ["failed"]:
+                    if task.attempts >= config.MAX_TASK_ATTEMPTS:
                         logger.info(
-                            f"Job {job.id} has exceeded max attempts. Failing job."
+                            f"TASK {task.id} has exceeded max attempts. Failing task."
                         )
-                        await update_job_details(
-                            job.id,
+                        await update_task_details(
+                            task.id,
                             {
                                 "status": "max_attempts_exceeded",
-                                "errorMessage": "Max attempts exceeded",
+                                "error_message": "Max attempts exceeded",
                             },
                         )
 
-                    elif job.id not in jobs_pending_or_in_progress:
-                        logger.info(f"Adding job to queue: {job.id}")
-                        jobs_pending_or_in_progress.add(job.id)
-                        await job_queue.put(job)
+                    elif task.id not in tasks_pending_or_in_progress:
+                        logger.info(f"Adding task to queue: {task.id}")
+                        tasks_pending_or_in_progress.add(task.id)
+                        await task_queue.put(task)
 
-            await asyncio.sleep(config.JOB_FETCH_INTERVAL_SECONDS)
+            await asyncio.sleep(config.TASK_FETCH_INTERVAL_SECONDS)
 
         except Exception as e:
-            logger.error(f"Error fetching jobs: {e}")
-            await asyncio.sleep(config.JOB_FETCH_INTERVAL_SECONDS)
+            logger.error(f"Error fetching tasks: {e}")
+            await asyncio.sleep(config.TASK_FETCH_INTERVAL_SECONDS)
 
 
 async def worker(
     worker_id: int,
-    job_queue: asyncio.Queue,
-    jobs_pending_or_in_progress: set,
-    job_locks: dict,
+    task_queue: asyncio.Queue,
+    tasks_pending_or_in_progress: set,
+    task_locks: dict,
 ):
     while True:
         try:
-            job = await job_queue.get()
+            task = await task_queue.get()
 
-            async with job_locks[job.id]:
-                logger.info(f"Worker {worker_id} processing job {job.id}...")
+            async with task_locks[task.id]:
+                logger.info(f"Worker {worker_id} processing task {task.id}...")
                 try:
-                    await process_job(job)
+                    await process_task(task)
                 except Exception as e:
-                    logger.error(f"Error processing job {job.id}: {e}")
+                    logger.error(f"Error processing task {task.id}: {e}")
                     error_message = str(e)
-                    await update_job_details(
-                        job.id,
+                    await update_task_details(
+                        task.id,
                         {
                             "status": "failed",
                             "errorMessage": error_message,
-                            "attempts": job.attempts + 1,
+                            "attempts": task.attempts + 1,
                         },
                     )
                 finally:
-                    jobs_pending_or_in_progress.remove(job.id)
-                    job_locks.pop(job.id, None)
+                    tasks_pending_or_in_progress.remove(task.id)
+                    task_locks.pop(task.id, None)
 
-            job_queue.task_done()
+            task_queue.task_done()
         except Exception as e:
             logger.error(f"Error in worker {worker_id}: {e}")
             await asyncio.sleep(3)
 
 
 async def async_main():
-    job_queue = asyncio.Queue()
-    jobs_pending_or_in_progress = set()
-    job_locks = defaultdict(asyncio.Lock)
+    task_queue = asyncio.Queue()
+    tasks_pending_or_in_progress = set()
+    task_locks = defaultdict(asyncio.Lock)
 
-    job_fetcher_task = asyncio.create_task(
-        job_fetcher(job_queue, jobs_pending_or_in_progress)
+    task_fetcher_task = asyncio.create_task(
+        task_fetcher(task_queue, tasks_pending_or_in_progress)
     )
 
     workers = [
         asyncio.create_task(
-            worker(i + 1, job_queue, jobs_pending_or_in_progress, job_locks)
+            worker(i + 1, task_queue, tasks_pending_or_in_progress, task_locks)
         )
         for i in range(config.MAX_NUM_WORKERS)
     ]
 
-    await asyncio.gather(job_fetcher_task, *workers)
+    await asyncio.gather(task_fetcher_task, *workers)
 
 
 def main():

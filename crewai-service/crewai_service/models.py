@@ -1,28 +1,38 @@
 from datetime import datetime
-from typing import Literal, Optional
+from typing import Literal
 
 from pydantic import BaseModel
 
 
+class MatchProcessingTask(BaseModel):
+    id: str
+    job_id: str
+    status: Literal[
+        "new", "in_progress", "completed", "failed", "max_attempts_exceeded"
+    ]
+    error_message: str | None
+    attempts: int
+    last_heart_beat: datetime
+    created_at: datetime
+    updated_at: datetime
+
+
 class JobToAnalyze(BaseModel):
     id: str
-    title: str
-    description: str
-    status: Literal[
+    upwk_title: str
+    upwk_description: str
+    match_analysis_status: Literal[
         "created", "in_progress", "completed", "failed", "max_attempts_exceeded"
     ]
-    attempts: int
-    createdAt: datetime
-    updatedAt: datetime
-    lastHeartBeat: datetime
-    errorMessage: Optional[str] = None
+    created_at: datetime
+    updated_at: datetime
 
 
-class Analysis(BaseModel):
+class MatchAnalysis(BaseModel):
     id: str
-    jobId: str
-    strength: str
-    analysis: str
-    tokenCount: int
-    createdAt: datetime
-    updatedAt: datetime
+    job_id: str
+    match_strength: str
+    match_analysis: str
+    # tokenCount: int
+    created_at: datetime
+    updated_at: datetime

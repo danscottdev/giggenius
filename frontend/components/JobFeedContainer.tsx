@@ -45,7 +45,7 @@ function JobFeedContainer() {
 
   const handleSyncJobs = async () => {
     try {
-      await axios.post("/api/import-jobs");
+      await axios.post("/api/jobs/import");
       const response = await axios.get<Job[]>("/api/jobs");
       setJobs(response.data);
     } catch (error) {

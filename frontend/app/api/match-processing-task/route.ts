@@ -14,9 +14,9 @@ const updateMatchTaskSchema = z.object({
       "max_attempts_exceeded",
     ])
     .optional(),
-  errorMessage: z.string().optional(),
+  error_message: z.string().optional(),
   attempts: z.number().optional(),
-  lastHeartBeat: z.string().optional(),
+  last_heart_beat: z.string().optional(),
 });
 
 export async function GET() {
@@ -70,16 +70,18 @@ export async function PATCH(request: NextRequest) {
       );
     }
 
-    const { status, errorMessage, attempts, lastHeartBeat } =
+    const { status, error_message, attempts, last_heart_beat } =
       validationResult.data;
 
     const updatedJob = await db
       .update(matchProcessingTasksTable)
       .set({
         status,
-        errorMessage,
+        error_message,
         attempts,
-        lastHeartBeat: lastHeartBeat ? new Date(lastHeartBeat) : undefined,
+        last_heart_beat: last_heart_beat
+          ? new Date(last_heart_beat)
+          : undefined,
       })
       .where(eq(matchProcessingTasksTable.id, jobId))
       .returning();
