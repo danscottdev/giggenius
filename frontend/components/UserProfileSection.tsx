@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils";
-// import { UserButton, useUser } from "@clerk/nextjs";
+import { UserButton, useUser } from "@clerk/nextjs";
 import React from "react";
 
 interface UserProfileSectionProps {
@@ -11,7 +11,7 @@ function UserProfileSection({
   isCollapsed,
   isMobile,
 }: UserProfileSectionProps) {
-  // const { user } = useUser();
+  const { user } = useUser();
 
   return (
     <div
@@ -26,13 +26,12 @@ function UserProfileSection({
           !isMobile && isCollapsed ? "justify-center" : "justify-start"
         )}
       >
-        {/* <UserButton
+        <UserButton
           appearance={{ elements: { userButtonAvatarBox: "h-8 w-8" } }}
-        /> */}
+        />
         {(isMobile || !isCollapsed) && (
           <span className="text-md font-medium">
-            {/* {user?.username || user?.firstName || user?.fullName || "Profile"} */}
-            DAN
+            {user?.username || user?.firstName || user?.fullName || "Profile"}
           </span>
         )}
       </div>

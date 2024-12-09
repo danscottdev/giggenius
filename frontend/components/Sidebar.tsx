@@ -6,7 +6,7 @@ import { X, Menu } from "lucide-react";
 import { cn } from "@/lib/utils";
 import SidebarNav from "./SidebarNav";
 import SidebarToggle from "./SidebarToggle";
-// import { useUser } from "@clerk/nextjs";
+import { SignInButton, SignedOut, useUser } from "@clerk/nextjs";
 import UserProfileSection from "./UserProfileSection";
 
 const MOBILE_WINDOW_WIDTH_LIMIT = 1024;
@@ -16,8 +16,7 @@ export default function Sidebar() {
   const [isOpen, setIsOpen] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(false);
 
-  // const { isSignedIn } = useUser();
-  const isSignedIn = true;
+  const { isSignedIn } = useUser();
   const sidebarRef = useRef<HTMLDivElement>(null);
 
   const handleClickOutside = (
@@ -113,9 +112,18 @@ export default function Sidebar() {
             <SidebarNav isMobile={isMobile} isCollapsed={isCollapsed} />
           </div>
 
-          {/* TODO: User Profile from Clerk */}
+          {/* <SignedOut>
+            <SignInButton />
+          </SignedOut> */}
+
           {isSignedIn && (
             <UserProfileSection isMobile={isMobile} isCollapsed={isCollapsed} />
+          )}
+
+          {!isSignedIn && (
+            <SignedOut>
+              <SignInButton />
+            </SignedOut>
           )}
 
           <SidebarToggle
