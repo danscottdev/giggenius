@@ -5,8 +5,6 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 
 const updateTaskSchema = z.object({
-  id: z.string(),
-  job_id: z.string(),
   status: z
     .enum([
       "new",
@@ -18,9 +16,7 @@ const updateTaskSchema = z.object({
     .optional(),
   error_message: z.string().optional(),
   attempts: z.number().optional(),
-  last_heart_beat: z.date().optional(),
-  created_at: z.date().optional(),
-  updated_at: z.date().optional(),
+  last_heart_beat: z.string(), // Gets passed in as a string, will be converted to a Date object
 });
 
 export async function GET() {
@@ -44,11 +40,17 @@ export async function GET() {
   }
 }
 
-export async function PATCH(
-  request: NextRequest,
-  { params }: { params: { taskId: string } }
-) {
-  console.log("Updating task... PATCH");
+export async function PATCH(request: NextRequest) {
+  console.log("PATCH Request received!");
+
+  const { searchParams } = new URL(request.url);
+  const taskId = searchParams.get("taskId");
+
+  console.log("Task ID:", taskId);
+
+  if (!taskId) {
+    return NextResponse.json({ error: "Task ID is required" }, { status: 400 });
+  }
   // Check to make sure person is authorized to edit this project
   // const { userId } = getAuth(request);
   //   const userId = "1";
@@ -57,6 +59,8 @@ export async function PATCH(
   // }
 
   const body = await request.json();
+
+  console.log("Body:", body);
   const validatedData = updateTaskSchema.safeParse(body);
   if (!validatedData.success) {
     console.log("Patch Request data validation FAILED!");
@@ -67,6 +71,7 @@ export async function PATCH(
   }
 
   console.log("Validated data:", validatedData.data);
+  const heartbeat_date = new Date(validatedData.data.last_heart_beat);
 
   // Make a DB request to update the project title
   const updatedTask = await db
@@ -75,13 +80,13 @@ export async function PATCH(
       status: validatedData.data.status,
       error_message: validatedData.data.error_message,
       attempts: validatedData.data.attempts,
-      last_heart_beat: validatedData.data.last_heart_beat,
+      last_heart_beat: heartbeat_date,
       updated_at: new Date(),
     })
     .where(
       and(
         // eq(matchProcessingTasksTable.user_id, userId),
-        eq(matchProcessingTasksTable.id, params.taskId)
+        eq(matchProcessingTasksTable.id, taskId)
       )
     )
     .returning();

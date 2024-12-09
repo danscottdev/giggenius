@@ -42,7 +42,7 @@ async def task_fetcher(task_queue: asyncio.Queue, tasks_pending_or_in_progress: 
 
             for task in tasks:
                 logger.info(f"Task: {task.id}")
-                if task.status == "new" and task.last_heart_beat:
+                if task.status == "in_progress" and task.last_heart_beat:
                     last_heartbeat_time = task.last_heart_beat.timestamp()
                     time_since_last_heartbeat = abs(current_time - last_heartbeat_time)
                     logger.info(
@@ -62,7 +62,7 @@ async def task_fetcher(task_queue: asyncio.Queue, tasks_pending_or_in_progress: 
                         if task.id in tasks_pending_or_in_progress:
                             tasks_pending_or_in_progress.remove(task.id)
 
-                elif task.status in ["failed"]:
+                elif task.status in ["new", "failed"]:
                     if task.attempts >= config.MAX_TASK_ATTEMPTS:
                         logger.info(
                             f"TASK {task.id} has exceeded max attempts. Failing task."

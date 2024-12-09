@@ -56,7 +56,7 @@ async def update_task_details(task_id: str, update_data: Dict[str, Any]) -> None
 async def update_task_heartbeat(task_id: str) -> None:
     try:
         url = f"{config.API_BASE_URL}/match-processing-task?taskId={task_id}"
-        data = {"lastHeartBeat": datetime.now().isoformat()}
+        data = {"last_heart_beat": datetime.now().isoformat()}
         async with aiohttp.ClientSession() as session:
             async with session.patch(url, json=data, headers=HEADERS) as response:
                 response.raise_for_status()
