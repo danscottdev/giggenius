@@ -1,27 +1,27 @@
-// app/api/jobs/import/route.ts
 import { promises as fs } from "fs";
 import path from "path";
 import { NextResponse } from "next/server";
 import { db } from "@/server/db";
 import { Job, jobsTable, matchProcessingTasksTable } from "@/server/db/schema";
-import { auth } from "@clerk/nextjs/server";
 import { eq, inArray, and } from "drizzle-orm";
+// import { getAuthenticatedUserId } from "@/lib/utils.server";
+import { auth } from "@clerk/nextjs/server";
 
 export async function POST() {
   try {
-    // Check user auth
-
     const { userId } = await auth();
+
     if (!userId) {
-      console.log("User: ", userId);
+      console.log("auth error");
       throw new Error("User not found");
     }
+
     // For now, just manually import json.
     const filePath = path.join(
       process.cwd(),
       "../scraper-service/upwork-2024-11-22.json"
     );
-    console.log(filePath);
+
     const jsonData = await fs.readFile(filePath, "utf8");
     const jobsData = JSON.parse(jsonData);
 

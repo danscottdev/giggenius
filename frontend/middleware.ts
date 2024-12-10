@@ -1,13 +1,7 @@
-import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
-//const isProtectedRoute = createRouteMatcher(['/dashboard(.*)', '/forum(.*)'])
-const isPublicRoute = createRouteMatcher(["/", "/pricing"]);
-export default clerkMiddleware(async (auth, req) => {
-  const { userId, redirectToSignIn } = await auth();
-  if (!userId && !isPublicRoute(req)) {
-    // Add custom logic to run before redirecting
-    return redirectToSignIn();
-  }
-});
+import { clerkMiddleware } from "@clerk/nextjs/server";
+
+export default clerkMiddleware();
+
 export const config = {
   matcher: [
     // Skip Next.js internals and all static files, unless found in search params
