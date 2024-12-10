@@ -3,16 +3,16 @@
 // import { auth } from "@clerk/nextjs/server";
 import { db } from "@/server/db";
 import { jobsTable, matchesTable } from "@/server/db/schema";
+import { auth } from "@clerk/nextjs/server";
 import { eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
 export async function POST(request: Request) {
-  //  Figure out who the user is
-  //   const { userId } = auth();
+  //  User Auth
+  const { userId } = await auth();
 
-  // Verify the user exists
-  //   if (!userId) {
-  // throw new Error("User not found");
-  //   }
+  if (!userId) {
+    throw new Error("User not found");
+  }
 
   console.log("Post request to analyze job...");
 
@@ -34,7 +34,7 @@ export async function POST(request: Request) {
     .insert(matchesTable)
     .values({
       job_id: body.job_id,
-      user_id: "1",
+      user_id: userId,
       match_strength: matchData.match_strength,
       match_analysis: matchData.match_analysis,
     })
@@ -50,8 +50,6 @@ export async function POST(request: Request) {
     .returning();
 
   return NextResponse.json(newMatchAnalysis);
-
-  //   redirect(`/project/${newProject.id}`);
 }
 
 export async function GET(request: Request) {

@@ -120,11 +120,9 @@ export default function Sidebar() {
             <UserProfileSection isMobile={isMobile} isCollapsed={isCollapsed} />
           )}
 
-          {!isSignedIn && (
-            <SignedOut>
-              <SignInButton />
-            </SignedOut>
-          )}
+          <SignedOut>
+            <SignInButton />
+          </SignedOut>
 
           <SidebarToggle
             isCollapsed={isCollapsed}

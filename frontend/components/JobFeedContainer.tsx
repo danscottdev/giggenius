@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Button } from "./ui/button";
 import JobFeed from "./JobFeed";
 import { RotateCcw } from "lucide-react";
@@ -8,18 +8,20 @@ import { Job } from "@/server/db/schema";
 import axios from "axios";
 import JobFilterToggle from "./JobFilterToggle";
 
-function JobFeedContainer() {
-  const [jobs, setJobs] = useState<Job[]>([]);
+function JobFeedContainer({ jobs }: { jobs: Job[] }) {
   const [filteredJobs, setFilteredJobs] = useState<Job[]>([]);
+  const intialJobs = useRef(jobs);
 
   const handleFilterChange = (filter: string) => {
     switch (filter) {
       case "new":
-        setFilteredJobs(jobs.filter((job) => !job.is_seen_by_user));
+        // setFilteredJobs(jobs.filter((job) => !job.is_seen_by_user));
+        setFilteredJobs(jobs);
         break;
       case "strong":
         // TODO: Add logic to check for match strength here
         // setFilteredJobs(jobs.filter((job) => false));
+        setFilteredJobs(jobs);
         break;
       case "all":
       default:
@@ -28,28 +30,19 @@ function JobFeedContainer() {
     }
   };
 
-  // Fetch jobs from database on component mount
   useEffect(() => {
-    const fetchJobsFromDB = async () => {
-      try {
-        console.log("Fetching jobs from DB (component)...");
-        const response = await axios.get<Job[]>("/api/jobs");
-        setJobs(response.data);
-      } catch (error) {
-        console.error("Failed to fetch jobs:", error);
-      }
-    };
-
-    fetchJobsFromDB();
+    setFilteredJobs(intialJobs.current);
   }, []);
 
-  const handleSyncJobs = async () => {
+  const handleImportNewJobs = async () => {
     try {
       await axios.post("/api/jobs/import");
-      const response = await axios.get<Job[]>("/api/jobs");
-      setJobs(response.data);
     } catch (error) {
       console.error("Failed to sync jobs:", error);
+    } finally {
+      // Reload component
+      console.log("Jobs synced.");
+      window.location.reload();
     }
   };
 
@@ -105,7 +98,7 @@ function JobFeedContainer() {
       <div className="flex justify-between items-center mb-6">
         <JobFilterToggle onFilterChange={handleFilterChange} />
         <div className="w-1/3 justify-end">
-          <form action={handleSyncJobs}>
+          <form action={handleImportNewJobs}>
             <Button className="bg-emerald-600 hover:bg-emerald-700 text-white">
               <RotateCcw className="w-4 h-4 mr-1" strokeWidth={3} />
               Fetch New Listings

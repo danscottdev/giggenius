@@ -1,30 +1,21 @@
 "server-only";
 
-// import { auth } from "@clerk/nextjs/server";
+import { auth } from "@clerk/nextjs/server";
 import { db } from "./db";
 import { Job, jobsTable, Match, matchesTable } from "./db/schema";
 import { eq } from "drizzle-orm";
-import dotenv from "dotenv";
 
-dotenv.config({ path: ".env.local" });
-
-process.env.POSTGRES_URL =
-  "postgres://default:3ArWgKp4EIyo@ep-withered-sea-a464k5eu-pooler.us-east-1.aws.neon.tech:5432/verceldb?sslmode=require";
-
-export function getJobsForUser(): Promise<Job[]> {
+export async function getJobsForUser(): Promise<Job[]> {
   console.log("Database URL exists:", !!process.env.POSTGRES_URL);
-  // Figure out who the user is
-  //   const { userId } = auth();
-  const user_id = "1";
 
-  // Verify the user exists
-  if (!user_id) {
+  const { userId } = await auth();
+  if (!userId) {
+    console.log("User: ", userId);
     throw new Error("User not found");
   }
 
-  // Fetch projects from database
   const jobs = db.query.jobsTable.findMany({
-    where: eq(jobsTable.user_id, user_id),
+    where: eq(jobsTable.user_id, userId),
     orderBy: (jobs, { desc }) => [desc(jobs.updated_at)],
   });
 
