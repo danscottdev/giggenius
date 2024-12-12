@@ -1,5 +1,6 @@
 from crewai import Agent, Crew, Process, Task
 from crewai.project import CrewBase, agent, crew, task
+from crewai_service.logger import logger
 from crewai_tools import CSVSearchTool, FileReadTool
 from pydantic import BaseModel
 
@@ -12,7 +13,7 @@ class MatchAnalysis(BaseModel):
 
 @CrewBase
 class MatchToProposalCrew:
-    print("MatchToProposalCrew")
+    logger.info("MatchToProposalCrew")
     """MatchToProposal crew"""
 
     agents_config = "config/agents.yaml"

@@ -6,8 +6,6 @@ import { Job, jobsTable, Match, matchesTable } from "./db/schema";
 import { eq } from "drizzle-orm";
 
 export async function getJobsForUser(): Promise<Job[]> {
-  console.log("Database URL exists:", !!process.env.POSTGRES_URL);
-
   const { userId } = await auth();
   if (!userId) {
     console.log("User: ", userId);

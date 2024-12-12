@@ -8,7 +8,7 @@ export default async function JobFeedPage() {
 
   return (
     <div>
-      <PageHeader title="My Job Feed!" />
+      <PageHeader title="My Job Feed" />
       <Separator />
       <JobFeedContainer jobs={jobs} />
     </div>

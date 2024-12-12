@@ -64,6 +64,18 @@ async def update_task_heartbeat(task_id: str) -> None:
         logger.error(f"Failed to update task heartbeat for task {task_id}: {error}")
 
 
+async def create_new_match(create_data: Dict[str, Any]) -> None:
+    logger.info(f"Creating new match: {create_data}")
+    # data = {**create_data, "last_heart_beat": datetime.now().isoformat()}
+    try:
+        url = f"{config.API_BASE_URL}/match"
+        async with aiohttp.ClientSession() as session:
+            async with session.post(url, json=create_data, headers=HEADERS) as response:
+                response.raise_for_status()
+    except aiohttp.ClientError as error:
+        logger.error(f"Failed to create match details for match: {error}")
+
+
 # async def fetch_asset(asset_id: str) -> Optional[Asset]:
 #     try:
 #         url = f"{config.API_BASE_URL}/asset?assetId={asset_id}"

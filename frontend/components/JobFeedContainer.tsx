@@ -7,6 +7,7 @@ import { RotateCcw } from "lucide-react";
 import { Job } from "@/server/db/schema";
 import axios from "axios";
 import JobFilterToggle from "./JobFilterToggle";
+import toast from "react-hot-toast";
 
 function JobFeedContainer({ jobs }: { jobs: Job[] }) {
   const [filteredJobs, setFilteredJobs] = useState<Job[]>([]);
@@ -37,8 +38,10 @@ function JobFeedContainer({ jobs }: { jobs: Job[] }) {
   const handleImportNewJobs = async () => {
     try {
       await axios.post("/api/jobs/import");
+      toast.success("Jobs imported successfully");
     } catch (error) {
-      console.error("Failed to sync jobs:", error);
+      console.error("Failed to import jobs:", error);
+      toast.error("Failed to import jobs");
     } finally {
       // Reload component
       console.log("Jobs synced.");
@@ -82,14 +85,12 @@ function JobFeedContainer({ jobs }: { jobs: Job[] }) {
       const matchResponse = await axios.post("/api/jobs/analyze", crewData);
 
       console.log("Match response:", matchResponse.data);
+      toast.success("Crew run triggered successfully");
     } catch (error) {
       console.error("Failed to trigger crew:", error);
+      toast.error("Failed to trigger crew");
     } finally {
       console.log("Crew run complete.");
-
-      // Refresh jobs list after crew run
-      // const response = await axios.get<Job[]>("/api/jobs");
-      // setJobs(response.data);
     }
   };
 
