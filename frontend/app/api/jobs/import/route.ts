@@ -1,28 +1,55 @@
-import { promises as fs } from "fs";
-import path from "path";
+// import { promises as fs } from "fs";
+// import path from "path";
 import { NextResponse } from "next/server";
 import { db } from "@/server/db";
-import { Job, jobsTable, matchProcessingTasksTable } from "@/server/db/schema";
+import {
+  Job,
+  jobsTable,
+  matchProcessingTasksTable,
+  userProfilesTable,
+} from "@/server/db/schema";
 import { eq, inArray, and } from "drizzle-orm";
 import { auth } from "@clerk/nextjs/server";
 
-export async function POST() {
+export async function POST(request: Request) {
   try {
-    const { userId } = await auth();
+    let { userId } = await auth();
 
     if (!userId) {
-      console.log("auth error");
-      throw new Error("User not found");
+      console.log("UserID set via header");
+      userId = request.headers.get("user_id");
+
+      if (!userId) {
+        console.log("UserID is null");
+        throw new Error("User ID is required");
+      }
+
+      // Check that userId exists in database
+      const user = await db
+        .select({ user_id: userProfilesTable.user_id })
+        .from(userProfilesTable)
+        .where(eq(userProfilesTable.user_id, userId));
+
+      if (user.length === 0) {
+        console.log("UserID not found in database");
+        throw new Error("User not found");
+      }
     }
 
-    // For now, just manually import json.
-    const filePath = path.join(
-      process.cwd(),
-      "../scraper-service/upwork-2024-11-22.json"
-    );
+    console.log("UserID:", userId);
 
-    const jsonData = await fs.readFile(filePath, "utf8");
-    const jobsData = JSON.parse(jsonData);
+    // For now, just manually import json.
+    // const filePath = path.join(
+    //   process.cwd(),
+    //   "../scraper-service/upwork-2024-11-22.json"
+    // );
+
+    // const jsonData = await fs.readFile(filePath, "utf8");
+    // const jobsData = JSON.parse(jsonData);
+
+    const jobsData = await request.json();
+    console.log("jobsData:", jobsData);
+    // const jobsData = requestBody.jobsData;
 
     const existingJobs = await db
       .select({ upwk_url: jobsTable.upwk_url })
