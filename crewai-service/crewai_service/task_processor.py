@@ -1,8 +1,9 @@
 import asyncio
 import json
+import os
 
 import aiohttp
-from crewai_service.api_client import (  # fetch_asset,; fetch_asset_file,; update_asset_content,
+from crewai_service.api_client import (
     create_new_match,
     update_task_details,
     update_task_heartbeat,
@@ -34,20 +35,34 @@ async def process_task(task: MatchProcessingTask) -> None:
         }
         print(parsed_job)
 
-        candidate_data = """
-        Howdy folks! I'm a professional web developer with over 5 years of experience, specializing in fully-custom WordPress development. This includes building out custom themes from scratch, implementing bespoke functionality via custom plugins, and other back-end customizations and integrations. In my time as a developer I've worked on a wide range of wordpress sites, ranging from small mom-and-pop business landing pages all the way up to enterprise-grade systems.
-        I'm especially well-versed in customizing and extending GravityForms, and have built out numerous custom plugins that help businesses integrate GravityForms with their existing business logic and systems. I also have extensive experience in getting WordPress sites to properly integrate on the back-end with other third-party business platforms, such as Salesforce.
-        Other wordpress-oriented services I offer:
-        - PHP upgrades. If your site is running on anything below PHP v8.1, your server is running code that has passed it's official end-of-life. Usually this isn't a *huge* deal, but over time it can create security vulnerabilities on your site, especially depending on what third-party plugins you are using.
-        - Server migrations. If you're looking to move your site from one host to another, no problem! I can setup a seamless transition that migrates all the files and database, so no content is lost and there is no downtime.
-        - Malware/hacked site recovery. This can be a bit of a wildcard depending on the specifics, if you're facing a problem here, let's chat!
-        So if you have any custom wordpress needs, don't hesitate to reach out! I'm a native English speaker based out of Boston, and I'm always happy to hop on a video call to chat more.
-        """
+        # Fetch content from ./data/cv.md and save it to a variable
+        # Will later replace this with a database call
+        file_path = os.path.join(os.path.dirname(__file__), "data", "cv.md")
 
-        # Replace with your inputs, it will automatically interpolate any tasks and agents information
+        # Check if the file exists
+        if not os.path.exists(file_path):
+            logger.error(f"File not found: {file_path}")
+            return
+
+        with open(file_path, "r") as f:
+            candidate_data = f.read()
+
+        print("Candidate Data")
+        print(candidate_data)
+
+        # candidate_data = """
+        # Howdy folks! I'm a professional web developer with over 5 years of experience, specializing in fully-custom WordPress development. This includes building out custom themes from scratch, implementing bespoke functionality via custom plugins, and other back-end customizations and integrations. In my time as a developer I've worked on a wide range of wordpress sites, ranging from small mom-and-pop business landing pages all the way up to enterprise-grade systems.
+        # I'm especially well-versed in customizing and extending GravityForms, and have built out numerous custom plugins that help businesses integrate GravityForms with their existing business logic and systems. I also have extensive experience in getting WordPress sites to properly integrate on the back-end with other third-party business platforms, such as Salesforce.
+        # Other wordpress-oriented services I offer:
+        # - PHP upgrades. If your site is running on anything below PHP v8.1, your server is running code that has passed it's official end-of-life. Usually this isn't a *huge* deal, but over time it can create security vulnerabilities on your site, especially depending on what third-party plugins you are using.
+        # - Server migrations. If you're looking to move your site from one host to another, no problem! I can setup a seamless transition that migrates all the files and database, so no content is lost and there is no downtime.
+        # - Malware/hacked site recovery. This can be a bit of a wildcard depending on the specifics, if you're facing a problem here, let's chat!
+        # So if you have any custom wordpress needs, don't hesitate to reach out! I'm a native English speaker based out of Boston, and I'm always happy to hop on a video call to chat more.
+        # """
+
         inputs = {
-            "candidate_data": candidate_data,
-            "job_info": f"JOB TITLE: {parsed_job['title']}\n\nJOB DESCRIPTION: {parsed_job['description']}",  # Add the job JSON object to the inputs
+            "path_to_candidate_data": candidate_data,
+            "job_info": f"JOB TITLE: {parsed_job['title']}\n\nJOB DESCRIPTION: {parsed_job['description']}",
         }
         # print(inputs)
 
@@ -64,13 +79,6 @@ async def process_task(task: MatchProcessingTask) -> None:
                 "match_analysis_status": result_dict,
             }
         )
-        # return result
-
-        # TODO: Save Analysis to DB
-        # logger.info(f"(PLACEHOLDER) Task {task.id} completed successfully")
-        # logger.info(
-        #     f"(PLACEHOLDER) Analysis for job ID: {task.job_id} completed successfully"
-        # )
 
         #  Update job status to completed
         await update_task_details(

@@ -1,44 +1,26 @@
-# John Doe
+# Candidate Name: Dan Scott
 
 ## Professional Summary
-Experienced Software Engineer with a strong background in Python, JavaScript, and RESTful APIs. Proven ability to develop and maintain software applications, collaborate with cross-functional teams, and ensure code quality.
+
+I'm a professional web developer with over 5 years of experience, specializing in fully-custom WordPress development. This includes building out custom themes from scratch, implementing bespoke functionality via custom plugins, and other back-end customizations and integrations. In my time as a developer I've worked on a wide range of wordpress sites, ranging from small mom-and-pop business landing pages all the way up to enterprise-grade systems.
+
+I'm especially well-versed in customizing and extending GravityForms, and have built out numerous custom plugins that help businesses integrate GravityForms with their existing business logic and systems. I also have extensive experience in getting WordPress sites to properly integrate on the back-end with other third-party business platforms, such as Salesforce.
 
 ## Technical Skills
-- **Programming Languages**: Python, JavaScript
-- **Web Development**: RESTful APIs, HTML, CSS
-- **Frameworks/Libraries**: Django, Flask, React
-- **Tools**: Git, Docker, Jenkins
-- **Databases**: MySQL, PostgreSQL
 
-## Work History
+- WordPress Development
+- PHP
+- JavaScript
+- CSS, SASS, Tailwind
 
-### Senior Software Engineer
-**Tech Innovations Inc., San Francisco, CA**
-*January 2020 - Present*
-- Developed and maintained multiple web applications using Python and JavaScript.
-- Collaborated with cross-functional teams to design and implement RESTful APIs.
-- Ensured code quality through rigorous testing and code reviews.
-- Automated deployment processes using Docker and Jenkins.
+## Project History
 
-### Software Engineer
-**Innovative Solutions LLC, San Francisco, CA**
-*June 2017 - December 2019*
-- Worked on full-stack web development projects using Python and JavaScript.
-- Built and maintained RESTful APIs for various applications.
-- Participated in Agile development processes, including sprint planning and daily stand-ups.
-- Mentored junior developers and conducted code reviews.
+- Built a custom wordpress plugin for a enterprise client that integrates GravityForms with the company's back-end Salesforce instance by building a custom API.
+- Built a custom wordpress plugin that enables a marketing agency's social media leadgen pipeline, acting as a middleware between the website and their back-end CRM.
+- Built a pixel-perfect website using ACF, based on designer-provided mockups
 
-## Education
-**Bachelor of Science in Computer Science**
-*University of California, Berkeley*
-*Graduated: May 2017*
+## Job Preferences
 
-## Key Achievements
-- Successfully led a project to migrate a legacy system to a modern web-based platform, resulting in a 30% increase in performance.
-- Recognized as Employee of the Month for outstanding performance and dedication.
-- Implemented a CI/CD pipeline that reduced deployment times by 50%.
-
-## Contact Information
-- **Email**: john.doe@example.com
-- **Phone**: (123) 456-7890
-- **LinkedIn**: linkedin.com/in/johndoe
+I am NOT interested in wordpress-related jobs that require design or the use of visual pagebuilders like Elementor or Divi
+I am interested in wordpress-related jobs that require custom development
+I am interested in wordpress-related jobs that require custom APIs, plugins, or other development in PHP or JavaScript.

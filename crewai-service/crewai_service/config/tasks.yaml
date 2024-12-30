@@ -1,34 +1,31 @@
 read_cv_task:
   description: >
-    Extract relevant information from the given CV. Focus on skills, experience,
-    education, and key achievements.
-    Ensure to capture the candidate's professional summary, technical skills,
-    work history, and educational background.
+    Extract relevant information from the candidate's profile, including professional experience and freelance project history.
+    Additionally, extract the candidate's technical skills and preferred coding languages and frameworks.
+    Additionally, take into account the user's preferences in terms of what types of jobs they are interested in.
 
-
-    CV data: {candidate_data}
+    Candidate Profile: {path_to_candidate_data}
   expected_output: >
-    A structured summary of the CV, including:
+    A structured summary of the Candidate Profile, including:
     - Professional Summary
     - Technical Skills
     - Work History
-    - Education
-    - Key Achievements
+    - Job/Project Preferences
 
 match_cv_task:
   description: >
-    Match the CV to the job opportunity based on skills, experience, and key
-    achievements.
+    Match the Candidate to the job opportunity based on skills, experience, and project history.
     Evaluate how well the candidate's profile fits the job description,
     focusing on the alignment of skills, work history, and key achievements
     with the job requirements.
-
+    Also take into account the candidate's preferences in terms of what types of jobs they are interested in.
+    In your output, refer to the candidate by their name.
 
     Job information: {job_info}
 
-    CV file: {candidate_data}
+    Candidate Profile: {path_to_candidate_data}
   expected_output: >
     A JSON object following the following structure:
     - job_title: The title of the job opportunity
     - match_strength: The strength of the match between the CV and the job on a scale of 0-5
-    - match_analysis: A detailed analysis of the match, including skills, experience, and key achievements that align with the job requirements
+    - match_analysis: A concise analysis of the match, including the job's requirements, the candidates skills & experience, and any additional notes. Refer to the candidate by their name.
