@@ -5,7 +5,6 @@ import {
   uuid,
   timestamp,
   varchar,
-  bigint,
   integer,
   boolean,
 } from "drizzle-orm/pg-core";
@@ -45,6 +44,16 @@ export const matchesTable = pgTable("matches", {
     .$onUpdate(() => new Date()),
 });
 
+export const userProfilesTable = pgTable("userProfiles", {
+  // id: uuid("id").defaultRandom().primaryKey(),
+  user_id: varchar("user_id", { length: 50 }).notNull().primaryKey(),
+  user_name: varchar("name", { length: 50 }).notNull(),
+  user_summary: text("summary").notNull(),
+  user_skills: text("skills").notNull(),
+  user_project_history: text("project_history").notNull(),
+  user_job_vetos: text("job_vetos").notNull(),
+});
+
 // One job can have many matches
 export const jobsTableRelations = relations(jobsTable, ({ many }) => ({
   matches: many(matchesTable),
@@ -67,9 +76,9 @@ export const matchProcessingTasksTable = pgTable("matchProcessingTasks", {
   job_id: uuid("job_id")
     .notNull()
     .references(() => jobsTable.id, { onDelete: "cascade" }),
-  // user_id: varchar("user_id", { length: 50 })
-  //   .notNull()
-  //   .references(() => matchesTable.user_id, { onDelete: "cascade" }),
+  user_id: varchar("user_id", { length: 50 })
+    // .notNull()
+    .references(() => userProfilesTable.user_id, { onDelete: "cascade" }),
   status: text("status").notNull().default("new"),
   error_message: text("error_message"),
   attempts: integer("attempts").notNull().default(0),
@@ -88,6 +97,10 @@ export const matchProcessingTasksTableRelations = relations(
     //   fields: [matchProcessingTasksTable.match_id],
     //   references: [matchesTable.id],
     // }),
+    user: one(userProfilesTable, {
+      fields: [matchProcessingTasksTable.user_id],
+      references: [userProfilesTable.user_id],
+    }),
     job: one(jobsTable, {
       fields: [matchProcessingTasksTable.job_id],
       references: [jobsTable.id],
@@ -105,3 +118,6 @@ export type InsertMatch = typeof matchesTable.$inferInsert;
 export type MatchProcessingTask = typeof matchProcessingTasksTable.$inferSelect;
 export type InsertMatchProcessingTask =
   typeof matchProcessingTasksTable.$inferInsert;
+
+export type UserProfile = typeof userProfilesTable.$inferSelect;
+export type InsertUserProfile = typeof userProfilesTable.$inferInsert;

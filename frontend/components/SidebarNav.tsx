@@ -1,6 +1,6 @@
 import React from "react";
 import { Button } from "./ui/button";
-import { Home, Compass, NotebookPen, Settings } from "lucide-react";
+import { Home, Compass, NotebookPen, Settings, UserPen } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { usePathname } from "next/navigation";
@@ -25,6 +25,12 @@ function SidebarNav({ isMobile, isCollapsed }: SidebarNavProps) {
       label: "Job Feed",
       icon: Home,
       isActive: (pathname: string) => pathname === "/jobfeed",
+    },
+    {
+      href: "/profile",
+      label: "User Profile",
+      icon: UserPen,
+      isActive: (pathname: string) => pathname === "/profile",
     },
     {
       href: "/proposals",

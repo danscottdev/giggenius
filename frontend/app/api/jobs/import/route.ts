@@ -4,7 +4,6 @@ import { NextResponse } from "next/server";
 import { db } from "@/server/db";
 import { Job, jobsTable, matchProcessingTasksTable } from "@/server/db/schema";
 import { eq, inArray, and } from "drizzle-orm";
-// import { getAuthenticatedUserId } from "@/lib/utils.server";
 import { auth } from "@clerk/nextjs/server";
 
 export async function POST() {
@@ -38,7 +37,7 @@ export async function POST() {
         )
       );
 
-    console.log("Existing jobs:", existingJobs);
+    // console.log("Existing jobs:", existingJobs);
 
     const newJobs = jobsData.filter((job: Job) => {
       return !existingJobs.some(
@@ -67,7 +66,7 @@ export async function POST() {
       await db.insert(matchProcessingTasksTable).values(
         insertedJobs.map((job: Job) => ({
           job_id: job.id,
-          user_id: "1",
+          user_id: userId,
           status: "new",
           error_message: null,
           attempts: 0,

@@ -7,6 +7,7 @@ from pydantic import BaseModel
 class MatchProcessingTask(BaseModel):
     id: str
     job_id: str
+    user_id: str
     status: Literal[
         "new", "in_progress", "completed", "failed", "max_attempts_exceeded"
     ]

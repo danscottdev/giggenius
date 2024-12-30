@@ -2,7 +2,13 @@
 
 import { auth } from "@clerk/nextjs/server";
 import { db } from "./db";
-import { Job, jobsTable, Match, matchesTable } from "./db/schema";
+import {
+  Job,
+  jobsTable,
+  Match,
+  matchesTable,
+  userProfilesTable,
+} from "./db/schema";
 import { eq } from "drizzle-orm";
 
 export async function getJobsForUser(): Promise<Job[]> {
@@ -30,4 +36,13 @@ export function getMatchesForJob(job_id: string): Promise<Match[]> {
   console.log("Matches:", matches);
 
   return matches;
+}
+
+// function to get row from userProfile table by user_id
+export async function getUserProfile(user_id: string): Promise<any> {
+  console.log("here!: " + user_id);
+  const profile = await db.query.userProfilesTable.findFirst({
+    where: eq(userProfilesTable.user_id, user_id),
+  });
+  return profile;
 }

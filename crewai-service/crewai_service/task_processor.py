@@ -35,20 +35,25 @@ async def process_task(task: MatchProcessingTask) -> None:
         }
         print(parsed_job)
 
+        user = await fetch_user(task.user_id)
+        print("HERE2")
+        # print(user)
+        candidate_data = user["user_summary"]
+
         # Fetch content from ./data/cv.md and save it to a variable
         # Will later replace this with a database call
-        file_path = os.path.join(os.path.dirname(__file__), "data", "cv.md")
+        # file_path = os.path.join(os.path.dirname(__file__), "data", "cv.md")
 
         # Check if the file exists
-        if not os.path.exists(file_path):
-            logger.error(f"File not found: {file_path}")
-            return
+        # if not os.path.exists(file_path):
+        #     logger.error(f"File not found: {file_path}")
+        #     return
 
-        with open(file_path, "r") as f:
-            candidate_data = f.read()
+        # with open(file_path, "r") as f:
+        #     candidate_data = f.read()
 
-        print("Candidate Data")
-        print(candidate_data)
+        # print("Candidate Data")
+        # print(candidate_data)
 
         # candidate_data = """
         # Howdy folks! I'm a professional web developer with over 5 years of experience, specializing in fully-custom WordPress development. This includes building out custom themes from scratch, implementing bespoke functionality via custom plugins, and other back-end customizations and integrations. In my time as a developer I've worked on a wide range of wordpress sites, ranging from small mom-and-pop business landing pages all the way up to enterprise-grade systems.
@@ -61,10 +66,10 @@ async def process_task(task: MatchProcessingTask) -> None:
         # """
 
         inputs = {
-            "path_to_candidate_data": candidate_data,
+            "candidate_data": candidate_data,
             "job_info": f"JOB TITLE: {parsed_job['title']}\n\nJOB DESCRIPTION: {parsed_job['description']}",
         }
-        # print(inputs)
+        print(inputs)
 
         result = MatchToProposalCrew().crew().kickoff(inputs=inputs)
         logger.info("Result: " + result)
@@ -138,4 +143,26 @@ async def fetch_job(job_id: str) -> dict:
     except aiohttp.ClientError as error:
         logger.error(f"Error fetching job: {error}")
         logger.error(f"Error fetching job: {url}")
+        return {}
+
+
+async def fetch_user(user_id: str) -> dict:
+    try:
+        url = f"{config.API_BASE_URL}/user?userId={user_id}"
+        logger.info(f"Fetching user: {url}")
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url, headers=HEADERS) as response:
+                if response.status == 200:
+                    # logger.info(f"Fetching user. Response: {response}")
+                    data = await response.json()
+                    logger.info(f"User fetched: {data}")
+                    return data
+                else:
+                    logger.error(f"Error fetching user: {response.status}")
+                    logger.error(f"Error fetching user: {response.text}")
+                    logger.error(f"Error fetching user: {url}")
+                    return {}
+    except aiohttp.ClientError as error:
+        logger.error(f"Error fetching user: {error}")
+        logger.error(f"Error fetching user: {url}")
         return {}

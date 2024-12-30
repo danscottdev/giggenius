@@ -1,0 +1,32 @@
+import PageHeader from "@/components/PageHeader";
+import { Separator } from "@radix-ui/react-separator";
+import { getUserProfile } from "@/server/queries";
+import { auth } from "@clerk/nextjs/server";
+import UserProfileForm from "@/components/UserProfileForm";
+
+export default async function UserProfilePage() {
+  const { userId } = await auth();
+  console.log("userId:", userId);
+
+  const user = await getUserProfile(userId as string);
+  console.log("user:", user);
+
+  const userProfile = {
+    user_name: user?.user_name,
+    user_summary: user?.user_summary,
+    // user_skills: user?.user_skills,
+    // user_project_history: user?.user_project_history,
+    // jobPreferences: user?.jobPreferences,
+    // user_job_vetos: user?.user_job_vetos,
+  };
+
+  console.log("userProfile1:", userProfile);
+
+  return (
+    <div className="p-6 bg-gray-100 min-h-screen">
+      <PageHeader title="My User Profile" />
+      <Separator className="my-4" />
+      <UserProfileForm userProfile={userProfile} />
+    </div>
+  );
+}
