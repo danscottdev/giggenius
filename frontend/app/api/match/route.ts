@@ -8,7 +8,7 @@ export async function POST(request: Request) {
   try {
     const data = await request.json();
 
-    console.log("Data:", data);
+    // console.log("Data:", data);
 
     const insertMatch = await db
       .insert(matchesTable)

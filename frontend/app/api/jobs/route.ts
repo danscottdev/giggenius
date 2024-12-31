@@ -32,7 +32,7 @@ export async function GET(): Promise<NextResponse> {
       throw new Error("User not found");
     }
 
-    console.log("Fetching jobs from DB endpoint...");
+    // console.log("Fetching jobs from DB endpoint...");
     const jobs: Job[] = await db
       .select()
       .from(jobsTable)

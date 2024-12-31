@@ -59,13 +59,13 @@ export async function POST(request: Request): Promise<NextResponse> {
   //   console.log("auth error");
   //   throw new Error("User not found");
   // }
-  console.log("Post request to analyze job...");
+  // console.log("Post request to analyze job...");
 
-  console.log("Request:", request);
+  // console.log("Request:", request);
 
   // extract data from request
   const body = await request.json();
-  console.log("Body.output:", body.output);
+  // console.log("Body.output:", body.output);
   const matchData = JSON.parse(body.output);
 
   const [newMatchAnalysis] = await db
@@ -78,7 +78,7 @@ export async function POST(request: Request): Promise<NextResponse> {
     })
     .returning();
 
-  console.log("New match analysis:", newMatchAnalysis);
+  // console.log("New match analysis:", newMatchAnalysis);
 
   // Update the job in the database to set match_analysis_status to true
   await db
@@ -130,14 +130,14 @@ export async function GET(request: Request): Promise<NextResponse> {
     // }
 
     const job_id = request.url.split("?job_id=")[1];
-    console.log("Fetching matches for job ID: " + job_id);
+    // console.log("Fetching matches for job ID: " + job_id);
 
     const matches = await db.query.matchesTable.findMany({
       where: eq(matchesTable.job_id, job_id),
       orderBy: (matches, { desc }) => [desc(matches.updated_at)],
     });
 
-    console.log("Matches:", matches);
+    // console.log("Matches:", matches);
     return NextResponse.json(matches);
   } catch (error) {
     console.error("Error fetching matches:", error);

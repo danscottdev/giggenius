@@ -82,63 +82,76 @@ function JobFeed({ jobs }: JobFeedProps) {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {jobs.map((job) => (
-            <React.Fragment key={job.id}>
-              <TableRow
-                className="cursor-pointer hover:bg-gray-100"
-                onClick={() => toggleRow(job.id)}
-              >
-                <TableCell>
-                  {expandedRows.has(job.id) ? (
-                    <ChevronDown className="h-4 w-4" />
-                  ) : (
-                    <ChevronRight className="h-4 w-4" />
-                  )}
-                </TableCell>
-                <TableCell>{job.upwk_title}</TableCell>
-                <TableCell>{truncateText(job.upwk_description, 170)}</TableCell>
-                <TableCell>{matchData[job.id]?.match_strength} / 5</TableCell>
-                <TableCell>Created At</TableCell>
-                <TableCell>{job.is_seen_by_user}</TableCell>
-              </TableRow>
-              {expandedRows.has(job.id) && (
-                <TableRow>
-                  <TableCell colSpan={6} className="bg-gray-50">
-                    <div className="p-0 flex flex-row justify-between align-center">
-                      <div className="w-full border p-4">
-                        <h3 className="font-bold">{job.upwk_title}</h3>
-                        <p>{job.upwk_description}</p>
-                        <p className="text-sm text-gray-700">
-                          <span className="font-medium">Budget:</span>{" "}
-                          {job.upwk_budget}
-                        </p>
-                        <div className="mt-4">
-                          <h4 className="font-bold">Client Info</h4>
-                          <p>Client Info Here</p>
-                          <p>Client Info Here</p>
-                          <p>Client Info Here</p>
+          {jobs.map((job) => {
+            const matchStrength = matchData[job.id]?.match_strength;
+            const highlightClass = matchStrength >= 4 ? "bg-green-100" : "";
+
+            return (
+              <React.Fragment key={job.id}>
+                <TableRow
+                  className={`cursor-pointer hover:bg-gray-100 ${highlightClass}`}
+                  onClick={() => toggleRow(job.id)}
+                >
+                  <TableCell>
+                    {expandedRows.has(job.id) ? (
+                      <ChevronDown className="h-4 w-4" />
+                    ) : (
+                      <ChevronRight className="h-4 w-4" />
+                    )}
+                  </TableCell>
+                  <TableCell>{job.upwk_title}</TableCell>
+                  <TableCell>
+                    {truncateText(job.upwk_description, 170)}
+                  </TableCell>
+                  <TableCell>{matchData[job.id]?.match_strength} / 5</TableCell>
+                  <TableCell>Created At</TableCell>
+                  <TableCell>{job.is_seen_by_user}</TableCell>
+                </TableRow>
+                {expandedRows.has(job.id) && (
+                  <TableRow>
+                    <TableCell colSpan={6} className="bg-gray-50">
+                      <div className="p-0 flex flex-row justify-between align-center">
+                        <div className="w-full border p-4">
+                          <h3 className="font-bold">{job.upwk_title}</h3>
+                          <p>{job.upwk_description}</p>
+                          <p className="text-sm text-gray-700">
+                            <span className="font-medium">Budget:</span>{" "}
+                            {job.upwk_budget}
+                          </p>
+                          <div className="mt-4">
+                            <h4 className="font-bold">Client Info</h4>
+                            <p>Client Info Here</p>
+                            <p>Client Info Here</p>
+                            <p>Client Info Here</p>
+                          </div>
+                          {/* Button to link to job listing URL */}
+                          <div className="mt-4">
+                            <a href={job.upwk_url} target="_blank">
+                              <Button>View Job Listing</Button>
+                            </a>
+                          </div>
+                        </div>
+                        <div className="w-1/2 border p-4">
+                          <p className="font-bold text-center mb-2">
+                            Match Strength: {matchData[job.id]?.match_strength}
+                          </p>
+                          <p className="border border-gray-200 bg-gray-100 p-3">
+                            Match Analysis: {matchData[job.id]?.match_analysis}
+                          </p>
+                          <Button className="w-full mt-2">
+                            Rate Match Analysis
+                          </Button>
+                          <Button className="w-full mt-2">
+                            Generate Proposal
+                          </Button>
                         </div>
                       </div>
-                      <div className="w-1/2 border p-4">
-                        <p className="font-bold text-center mb-2">
-                          Match Strength: {matchData[job.id]?.match_strength}
-                        </p>
-                        <p className="border border-gray-200 bg-gray-100 p-3">
-                          Match Analysis: {matchData[job.id]?.match_analysis}
-                        </p>
-                        <Button className="w-full mt-2">
-                          Rate Match Analysis
-                        </Button>
-                        <Button className="w-full mt-2">
-                          Generate Proposal
-                        </Button>
-                      </div>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              )}
-            </React.Fragment>
-          ))}
+                    </TableCell>
+                  </TableRow>
+                )}
+              </React.Fragment>
+            );
+          })}
         </TableBody>
       </Table>
     </div>
