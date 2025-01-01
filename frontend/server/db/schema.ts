@@ -32,7 +32,6 @@ export const matchesTable = pgTable("matches", {
     onDelete: "cascade",
   }),
   user_id: varchar("user_id", { length: 50 }).default("1").notNull(),
-  // match_id: uuid("match_id").default("1").notNull(),
   match_strength: integer("match_strength").default(0).notNull(),
   match_analysis: text("match_analysis").default("Analysis").notNull(),
   user_grade: integer("user_grade"),
@@ -45,7 +44,6 @@ export const matchesTable = pgTable("matches", {
 });
 
 export const userProfilesTable = pgTable("userProfiles", {
-  // id: uuid("id").defaultRandom().primaryKey(),
   user_id: varchar("user_id", { length: 50 }).notNull().primaryKey(),
   user_name: varchar("name", { length: 50 }).notNull(),
   user_summary: text("summary").notNull(),
@@ -69,16 +67,13 @@ export const matchesTableRelations = relations(matchesTable, ({ one }) => ({
 
 export const matchProcessingTasksTable = pgTable("matchProcessingTasks", {
   id: uuid("id").defaultRandom().primaryKey(),
-  // match_id: uuid("match_id")
-  //   .notNull()
-  //   .unique()
-  //   .references(() => matchesTable.id, { onDelete: "cascade" }),
   job_id: uuid("job_id")
     .notNull()
     .references(() => jobsTable.id, { onDelete: "cascade" }),
-  user_id: varchar("user_id", { length: 50 })
-    // .notNull()
-    .references(() => userProfilesTable.user_id, { onDelete: "cascade" }),
+  user_id: varchar("user_id", { length: 50 }).references(
+    () => userProfilesTable.user_id,
+    { onDelete: "cascade" }
+  ),
   status: text("status").notNull().default("new"),
   error_message: text("error_message"),
   attempts: integer("attempts").notNull().default(0),
@@ -93,10 +88,6 @@ export const matchProcessingTasksTable = pgTable("matchProcessingTasks", {
 export const matchProcessingTasksTableRelations = relations(
   matchProcessingTasksTable,
   ({ one }) => ({
-    // matches: one(matchesTable, {
-    //   fields: [matchProcessingTasksTable.match_id],
-    //   references: [matchesTable.id],
-    // }),
     user: one(userProfilesTable, {
       fields: [matchProcessingTasksTable.user_id],
       references: [userProfilesTable.user_id],

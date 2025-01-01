@@ -8,8 +8,6 @@ export async function POST(request: Request) {
   try {
     const data = await request.json();
 
-    // console.log("Data:", data);
-
     const insertMatch = await db
       .insert(matchesTable)
       .values({
@@ -24,7 +22,8 @@ export async function POST(request: Request) {
       })
       .returning();
 
-    console.log("New match:", insertMatch);
+    console.log("insertMatch:", insertMatch);
+
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error("Create new match failed:", error);

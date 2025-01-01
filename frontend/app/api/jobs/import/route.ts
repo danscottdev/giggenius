@@ -1,5 +1,3 @@
-// import { promises as fs } from "fs";
-// import path from "path";
 import { NextResponse } from "next/server";
 import { db } from "@/server/db";
 import {
@@ -24,7 +22,6 @@ export async function POST(request: Request) {
         throw new Error("User ID is required");
       }
 
-      // Check that userId exists in database
       const user = await db
         .select({ user_id: userProfilesTable.user_id })
         .from(userProfilesTable)
@@ -36,20 +33,7 @@ export async function POST(request: Request) {
       }
     }
 
-    console.log("UserID:", userId);
-
-    // For now, just manually import json.
-    // const filePath = path.join(
-    //   process.cwd(),
-    //   "../scraper-service/upwork-2024-11-22.json"
-    // );
-
-    // const jsonData = await fs.readFile(filePath, "utf8");
-    // const jobsData = JSON.parse(jsonData);
-
     const jobsData = await request.json();
-    console.log("jobsData:", jobsData);
-    // const jobsData = requestBody.jobsData;
 
     const existingJobs = await db
       .select({ upwk_url: jobsTable.upwk_url })
@@ -63,8 +47,6 @@ export async function POST(request: Request) {
           eq(jobsTable.user_id, userId)
         )
       );
-
-    // console.log("Existing jobs:", existingJobs);
 
     const newJobs = jobsData.filter((job: Job) => {
       return !existingJobs.some(

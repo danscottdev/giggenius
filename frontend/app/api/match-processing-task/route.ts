@@ -51,12 +51,6 @@ export async function PATCH(request: NextRequest) {
   if (!taskId) {
     return NextResponse.json({ error: "Task ID is required" }, { status: 400 });
   }
-  // Check to make sure person is authorized to edit this project
-  // const { userId } = getAuth(request);
-  //   const userId = "1";
-  // if (!userId) {
-  //   return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  // }
 
   const body = await request.json();
 

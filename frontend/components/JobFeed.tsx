@@ -56,8 +56,6 @@ function JobFeed({ jobs }: JobFeedProps) {
     fetchMatchData();
   }, [jobs]);
 
-  // console.log("JOB FEED:" + jobs);
-
   const toggleRow = (rowId: string) => {
     const newExpandedRows = new Set(expandedRows);
     if (newExpandedRows.has(rowId)) {

@@ -38,21 +38,17 @@ function JobFeedContainer({ jobs }: { jobs: Job[] }) {
   const handleImportNewJobs = async (
     event: React.FormEvent<HTMLFormElement>
   ) => {
-    event.preventDefault(); // Prevent the default form submission behavior
-    // console.log("handleImportNewJobs");
+    event.preventDefault();
 
     try {
       const formData = new FormData(event.currentTarget);
       const file = formData.get("file") as File;
-      // console.log(formData);
       if (!file) return;
-      // console.log("HERE");
 
       const reader = new FileReader();
       reader.onload = async (e) => {
         try {
           const json = JSON.parse(e.target?.result as string);
-          // console.log("JSON:", json);
           await axios.post("/api/jobs/import", json);
           toast.success("Jobs imported successfully");
         } catch (error) {
@@ -65,10 +61,7 @@ function JobFeedContainer({ jobs }: { jobs: Job[] }) {
       console.error("Failed to import jobs:", error);
       toast.error("Failed to import jobs");
     } finally {
-      // Reload component
       setFilteredJobs(jobs);
-      // console.log("Jobs synced.");
-      // window.location.reload();
     }
   };
 
@@ -98,12 +91,6 @@ function JobFeedContainer({ jobs }: { jobs: Job[] }) {
             {/* TODO: Update to pull last actual fetch timestamp */}
             {/* Last Fetched from Upwork: 2024-11-22 */}
           </span>
-          <form>
-            {/* <Button className="bg-emerald-600 hover:bg-emerald-700 text-white">
-              <RotateCcw className="w-4 h-4 mr-1" strokeWidth={3} />
-              Run Crew Analysis
-            </Button> */}
-          </form>
         </div>
       </div>
       <JobFeed jobs={filteredJobs} />

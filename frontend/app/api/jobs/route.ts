@@ -2,7 +2,6 @@ import { db } from "@/server/db";
 import { jobsTable } from "@/server/db/schema";
 import { NextResponse } from "next/server";
 import { eq } from "drizzle-orm";
-// import { getAuthenticatedUserId } from "@/lib/utils.server";
 import { Job } from "@/server/db/schema";
 import { auth } from "@clerk/nextjs/server";
 
@@ -32,7 +31,6 @@ export async function GET(): Promise<NextResponse> {
       throw new Error("User not found");
     }
 
-    // console.log("Fetching jobs from DB endpoint...");
     const jobs: Job[] = await db
       .select()
       .from(jobsTable)

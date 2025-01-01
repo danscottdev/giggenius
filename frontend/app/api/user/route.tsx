@@ -10,11 +10,8 @@ import { UserProfile } from "@/server/db/schema";
  */
 export async function GET(request: Request): Promise<NextResponse> {
   try {
-    console.log("Fetching user from DB endpoint...");
-    // extract userID from query parameter:
     const url = new URL(request.url);
     const userId = url.searchParams.get("userId");
-    console.log("user ID:", userId);
 
     if (!userId) {
       console.log("No user ID provided");
@@ -24,7 +21,6 @@ export async function GET(request: Request): Promise<NextResponse> {
       );
     }
 
-    console.log("Fetching user from DB endpoint...");
     const users: UserProfile[] = await db
       .select()
       .from(userProfilesTable)

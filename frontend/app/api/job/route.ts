@@ -10,11 +10,8 @@ import { Job } from "@/server/db/schema";
  */
 export async function GET(request: Request): Promise<NextResponse> {
   try {
-    // console.log("Fetching job from DB endpoint...");
-    // extract jobID from query parameter:
     const url = new URL(request.url);
     const jobId = url.searchParams.get("jobId");
-    // console.log("Job ID:", jobId);
 
     if (!jobId) {
       console.log("No job ID provided");
@@ -24,7 +21,6 @@ export async function GET(request: Request): Promise<NextResponse> {
       );
     }
 
-    // console.log("Fetching job from DB endpoint...");
     const jobs: Job[] = await db
       .select()
       .from(jobsTable)
