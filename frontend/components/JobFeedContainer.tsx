@@ -50,6 +50,8 @@ function JobFeedContainer({ jobs }: { jobs: Job[] }) {
         try {
           const json = JSON.parse(e.target?.result as string);
           await axios.post("/api/jobs/import", json);
+          const newJobs = await axios.get("/api/jobs");
+          setFilteredJobs(newJobs.data);
           toast.success("Jobs imported successfully");
         } catch (error) {
           console.error("Invalid JSON file:", error);
@@ -60,8 +62,6 @@ function JobFeedContainer({ jobs }: { jobs: Job[] }) {
     } catch (error) {
       console.error("Failed to import jobs:", error);
       toast.error("Failed to import jobs");
-    } finally {
-      setFilteredJobs(jobs);
     }
   };
 

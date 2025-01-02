@@ -1,7 +1,7 @@
 import { db } from "@/server/db";
 import { jobsTable } from "@/server/db/schema";
 import { NextResponse } from "next/server";
-import { eq } from "drizzle-orm";
+import { eq, desc } from "drizzle-orm";
 import { Job } from "@/server/db/schema";
 import { auth } from "@clerk/nextjs/server";
 
@@ -35,6 +35,7 @@ export async function GET(): Promise<NextResponse> {
       .select()
       .from(jobsTable)
       .where(eq(jobsTable.user_id, userId))
+      .orderBy(desc(jobsTable.updated_at))
       .execute();
     return NextResponse.json(jobs);
   } catch (error) {

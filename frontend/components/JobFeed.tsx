@@ -75,8 +75,8 @@ function JobFeed({ jobs }: JobFeedProps) {
             <TableHead>Title</TableHead>
             <TableHead>Summary</TableHead>
             <TableHead>Match</TableHead>
-            <TableHead>Date</TableHead>
-            <TableHead>Status</TableHead>
+            <TableHead className="w-2">Timestamp</TableHead>
+            {/* <TableHead>Status</TableHead> */}
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -102,8 +102,16 @@ function JobFeed({ jobs }: JobFeedProps) {
                     {truncateText(job.upwk_description, 170)}
                   </TableCell>
                   <TableCell>{matchData[job.id]?.match_strength} / 5</TableCell>
-                  <TableCell>Created At</TableCell>
-                  <TableCell>{job.is_seen_by_user}</TableCell>
+                  <TableCell>
+                    {new Intl.DateTimeFormat("en-US", {
+                      month: "short",
+                      day: "2-digit",
+                      hour: "numeric",
+                      minute: "2-digit",
+                      hour12: true,
+                    }).format(new Date(job.created_at))}
+                  </TableCell>
+                  {/* <TableCell>{job.is_seen_by_user}</TableCell> */}
                 </TableRow>
                 {expandedRows.has(job.id) && (
                   <TableRow>
