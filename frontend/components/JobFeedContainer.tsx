@@ -4,7 +4,7 @@ import React, { useEffect, useRef, useState } from "react";
 // import { Button } from "./ui/button";
 import JobFeed from "./JobFeed";
 // import { RotateCcw } from "lucide-react";
-import { Job } from "@/server/db/schema";
+import { Job, JobWithMatches } from "@/server/db/schema";
 import axios from "axios";
 import JobFilterToggle from "./JobFilterToggle";
 import toast from "react-hot-toast";
@@ -13,18 +13,18 @@ function JobFeedContainer({ jobs }: { jobs: Job[] }) {
   const [filteredJobs, setFilteredJobs] = useState<Job[]>([]);
   const intialJobs = useRef(jobs);
 
-  const handleFilterChange = (filter: string) => {
+  const handleFilterChange = async (filter: string) => {
     switch (filter) {
-      case "new":
-        // setFilteredJobs(jobs.filter((job) => !job.is_seen_by_user));
-        setFilteredJobs(jobs);
-        break;
       case "strong":
-        // TODO: Add logic to check for match strength here
-        // setFilteredJobs(jobs.filter((job) => false));
+        // API call to get jobs with match strength >= 4
+        const strongJobs = await axios.get("/api/jobs?strongOnly=true");
+        setFilteredJobs(strongJobs.data);
+        break;
+      case "new":
+        // @TODO API call to get jobs by last updated date
+        // currently just resets to initial jobs when page loaded. Which is the same I guess.
         setFilteredJobs(jobs);
         break;
-      case "all":
       default:
         setFilteredJobs(jobs);
         break;
@@ -77,10 +77,6 @@ function JobFeedContainer({ jobs }: { jobs: Job[] }) {
               accept=".json"
               className="bg-gray-400 hover:bg-emerald-700 text-white px-4 py-2 rounded"
             />
-            {/* <Button className="bg-emerald-600 hover:bg-emerald-700 text-white"> */}
-            {/* <RotateCcw className="w-4 h-4 mr-1" strokeWidth={3} /> */}
-            {/* Fetch New Listings */}
-            {/* </Button> */}
             <input
               type="submit"
               value="Import New Listings"
@@ -93,7 +89,7 @@ function JobFeedContainer({ jobs }: { jobs: Job[] }) {
           </span>
         </div>
       </div>
-      <JobFeed jobs={filteredJobs} />
+      <JobFeed jobs={filteredJobs as JobWithMatches[]} />
     </div>
   );
 }

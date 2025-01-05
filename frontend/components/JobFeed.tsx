@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   Table,
   TableBody,
@@ -10,51 +10,16 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { ChevronDown, ChevronRight } from "lucide-react";
-import { Job } from "@/server/db/schema";
+import { JobWithMatches } from "@/server/db/schema";
 import { Button } from "./ui/button";
 import { truncateText } from "@/lib/utils";
-import axios from "axios";
 
 interface JobFeedProps {
-  jobs: Job[];
-}
-
-interface Match {
-  match_strength: number;
-  match_analysis: string;
+  jobs: JobWithMatches[];
 }
 
 function JobFeed({ jobs }: JobFeedProps) {
   const [expandedRows, setExpandedRows] = useState(new Set());
-  const [matchData, setMatchData] = useState<{
-    [key: string]: { match_strength: number; match_analysis: string };
-  }>({});
-
-  useEffect(() => {
-    const fetchMatchData = async () => {
-      const matches: {
-        [key: string]: { match_strength: number; match_analysis: string };
-      } = {};
-      for (const job of jobs) {
-        const matchArray = await axios.get<Match[]>(
-          `/api/jobs/analyze?job_id=${job.id}`
-        );
-
-        const matchData = matchArray.data;
-
-        if (matchData.length > 0) {
-          const match = matchData[0];
-          matches[job.id] = {
-            match_strength: match.match_strength,
-            match_analysis: match.match_analysis,
-          };
-        }
-      }
-      setMatchData(matches);
-    };
-
-    fetchMatchData();
-  }, [jobs]);
 
   const toggleRow = (rowId: string) => {
     const newExpandedRows = new Set(expandedRows);
@@ -76,12 +41,11 @@ function JobFeed({ jobs }: JobFeedProps) {
             <TableHead>Summary</TableHead>
             <TableHead>Match</TableHead>
             <TableHead className="w-2">Timestamp</TableHead>
-            {/* <TableHead>Status</TableHead> */}
           </TableRow>
         </TableHeader>
         <TableBody>
           {jobs.map((job) => {
-            const matchStrength = matchData[job.id]?.match_strength;
+            const matchStrength = job.matches[0]?.match_strength || 0;
             const highlightClass = matchStrength >= 4 ? "bg-green-100" : "";
 
             return (
@@ -101,7 +65,7 @@ function JobFeed({ jobs }: JobFeedProps) {
                   <TableCell>
                     {truncateText(job.upwk_description, 170)}
                   </TableCell>
-                  <TableCell>{matchData[job.id]?.match_strength} / 5</TableCell>
+                  <TableCell>{matchStrength} / 5</TableCell>
                   <TableCell>
                     {new Intl.DateTimeFormat("en-US", {
                       month: "short",
@@ -111,7 +75,6 @@ function JobFeed({ jobs }: JobFeedProps) {
                       hour12: true,
                     }).format(new Date(job.created_at))}
                   </TableCell>
-                  {/* <TableCell>{job.is_seen_by_user}</TableCell> */}
                 </TableRow>
                 {expandedRows.has(job.id) && (
                   <TableRow>
@@ -130,7 +93,6 @@ function JobFeed({ jobs }: JobFeedProps) {
                             <p>Client Info Here</p>
                             <p>Client Info Here</p>
                           </div>
-                          {/* Button to link to job listing URL */}
                           <div className="mt-4">
                             <a href={job.upwk_url} target="_blank">
                               <Button>View Job Listing</Button>
@@ -139,10 +101,10 @@ function JobFeed({ jobs }: JobFeedProps) {
                         </div>
                         <div className="w-1/2 border p-4">
                           <p className="font-bold text-center mb-2">
-                            Match Strength: {matchData[job.id]?.match_strength}
+                            Match Strength: {matchStrength} / 5
                           </p>
                           <p className="border border-gray-200 bg-gray-100 p-3">
-                            Match Analysis: {matchData[job.id]?.match_analysis}
+                            Match Analysis: {job.matches[0]?.match_analysis}
                           </p>
                           <Button className="w-full mt-2">
                             Rate Match Analysis

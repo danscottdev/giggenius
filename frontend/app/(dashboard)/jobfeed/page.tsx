@@ -5,6 +5,7 @@ import { Separator } from "@radix-ui/react-separator";
 
 export default async function JobFeedPage() {
   const jobs = await getJobsForUser();
+  // console.log(jobs);
 
   return (
     <div>

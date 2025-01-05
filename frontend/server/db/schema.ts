@@ -101,6 +101,7 @@ export const matchProcessingTasksTableRelations = relations(
 
 // Types
 export type Job = typeof jobsTable.$inferSelect;
+export type JobWithMatches = Job & { matches: Match[] };
 export type InsertJob = typeof jobsTable.$inferInsert;
 
 export type Match = typeof matchesTable.$inferSelect;

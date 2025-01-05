@@ -20,7 +20,10 @@ export async function getJobsForUser(): Promise<Job[]> {
   const jobs = db.query.jobsTable.findMany({
     where: eq(jobsTable.user_id, userId),
     orderBy: (jobs, { desc }) => [desc(jobs.updated_at)],
-    limit: 10,
+    with: {
+      matches: true,
+    },
+    limit: 50,
   });
 
   return jobs;
