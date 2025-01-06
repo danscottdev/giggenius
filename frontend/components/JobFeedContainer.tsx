@@ -11,6 +11,7 @@ import toast from "react-hot-toast";
 
 function JobFeedContainer({ jobs }: { jobs: Job[] }) {
   const [filteredJobs, setFilteredJobs] = useState<Job[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
   const intialJobs = useRef(jobs);
 
   const handleFilterChange = async (filter: string) => {
@@ -65,6 +66,24 @@ function JobFeedContainer({ jobs }: { jobs: Job[] }) {
     }
   };
 
+  const handleManualFetch = async () => {
+    setIsLoading(true);
+    toast.success("Running CrewAI analysis...");
+    try {
+      const response = await axios.get(
+        "https://giggenius-production.up.railway.app/trigger"
+      );
+      console.log(response);
+      const newJobs = await axios.get("/api/jobs");
+      setFilteredJobs(newJobs.data);
+    } catch (error) {
+      console.error("Failed to run CrewAI analysis:", error);
+      toast.error("Failed to run CrewAI analysis");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <div className="bg-white rounded-lg shadow-sm p-6">
       <div className="flex justify-between items-center mb-6">
@@ -88,6 +107,15 @@ function JobFeedContainer({ jobs }: { jobs: Job[] }) {
             {/* Last Fetched from Upwork: 2024-11-22 */}
           </span>
         </div>
+        <button
+          className={`bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded ${
+            isLoading ? "opacity-50 cursor-not-allowed" : ""
+          }`}
+          onClick={handleManualFetch}
+          disabled={isLoading}
+        >
+          {isLoading ? "Running..." : "Run CrewAI Analysis"}
+        </button>
       </div>
       <JobFeed jobs={filteredJobs as JobWithMatches[]} />
     </div>

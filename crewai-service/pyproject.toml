@@ -8,6 +8,8 @@ authors = ["Your Name <you@example.com>"]
 python = ">=3.10,<=3.13"
 crewai = { extras = ["tools"], version = "^0.35.8" }
 crewai-tools = "^0.4.6"
+aiohttp = "^3.8.1"
+aiohttp-cors = "^0.7.0"
 
 [tool.poetry.scripts]
 crewai_service = "crewai_service.main:main"
