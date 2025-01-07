@@ -31,7 +31,7 @@ export const matchesTable = pgTable("matches", {
   job_id: uuid("job_id").references(() => jobsTable.id, {
     onDelete: "cascade",
   }),
-  user_id: varchar("user_id", { length: 50 }).default("1").notNull(),
+  // user_id: varchar("user_id", { length: 50 }).default("1").notNull(),
   match_strength: integer("match_strength").default(0).notNull(),
   match_analysis: text("match_analysis").default("Analysis").notNull(),
   user_grade: integer("user_grade"),

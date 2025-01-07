@@ -22,9 +22,9 @@ function JobFeedContainer({ jobs }: { jobs: Job[] }) {
         setFilteredJobs(strongJobs.data);
         break;
       case "new":
-        // @TODO API call to get jobs by last updated date
-        // currently just resets to initial jobs when page loaded. Which is the same I guess.
-        setFilteredJobs(jobs);
+        // API endpoint fetches jobs by newest first by default
+        const newJobs = await axios.get("/api/jobs");
+        setFilteredJobs(newJobs.data);
         break;
       default:
         setFilteredJobs(jobs);
@@ -76,6 +76,7 @@ function JobFeedContainer({ jobs }: { jobs: Job[] }) {
       console.log(response);
       const newJobs = await axios.get("/api/jobs");
       setFilteredJobs(newJobs.data);
+      toast.success("CrewAI analysis complete");
     } catch (error) {
       console.error("Failed to run CrewAI analysis:", error);
       toast.error("Failed to run CrewAI analysis");

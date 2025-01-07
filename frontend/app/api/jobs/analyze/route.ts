@@ -60,7 +60,7 @@ export async function POST(request: Request): Promise<NextResponse> {
     .insert(matchesTable)
     .values({
       job_id: body.job_id,
-      user_id: body.user_id,
+      // user_id: body.user_id,
       match_strength: matchData.match_strength,
       match_analysis: matchData.match_analysis,
     })

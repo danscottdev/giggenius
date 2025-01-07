@@ -26,6 +26,7 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
   try {
     console.log("GET request received");
     const { userId } = await auth();
+    console.log("userId", userId);
 
     if (!userId) {
       console.log("auth error");
@@ -69,13 +70,14 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
       return NextResponse.json(jobs);
     } else {
       console.log("not strongOnly");
-      const jobs: Job[] = await db
-        .select()
-        .from(jobsTable)
-        .where(eq(jobsTable.user_id, userId))
-        .orderBy(desc(jobsTable.updated_at))
-        .limit(50)
-        .execute();
+      const jobs: Job[] = await db.query.jobsTable.findMany({
+        where: eq(jobsTable.user_id, userId),
+        orderBy: (jobs, { desc }) => [desc(jobs.updated_at)],
+        with: {
+          matches: true,
+        },
+        limit: 50,
+      });
       return NextResponse.json(jobs);
     }
   } catch (error) {
