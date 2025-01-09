@@ -3,6 +3,7 @@ import { userProfilesTable } from "@/server/db/schema";
 import { NextResponse } from "next/server";
 import { eq } from "drizzle-orm";
 import { UserProfile } from "@/server/db/schema";
+import { updateUserProfile } from "@/server/queries";
 
 /**
  * Retrieves user profile data for the given userID
@@ -33,4 +34,11 @@ export async function GET(request: Request): Promise<NextResponse> {
       { status: 500 }
     );
   }
+}
+export async function POST(request: Request): Promise<NextResponse> {
+  console.log("POST USER request received");
+  const profile = await request.json();
+  console.log("profile:", profile);
+  await updateUserProfile(profile as UserProfile);
+  return NextResponse.json({ message: "Profile updated" });
 }

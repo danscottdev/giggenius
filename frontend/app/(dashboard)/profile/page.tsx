@@ -12,12 +12,13 @@ export default async function UserProfilePage() {
   console.log("user:", user);
 
   const userProfile = {
+    user_id: user?.user_id,
     user_name: user?.user_name,
     user_summary: user?.user_summary,
-    // user_skills: user?.user_skills,
-    // user_project_history: user?.user_project_history,
+    user_skills: user?.user_skills,
+    user_project_history: user?.user_project_history,
     // jobPreferences: user?.jobPreferences,
-    // user_job_vetos: user?.user_job_vetos,
+    user_job_vetos: user?.user_job_vetos,
   };
 
   console.log("userProfile1:", userProfile);
