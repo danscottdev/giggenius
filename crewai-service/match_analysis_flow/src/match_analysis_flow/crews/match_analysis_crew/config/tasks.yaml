@@ -1,3 +1,19 @@
+red_flag_check_task:
+  description: >
+    Analyze the job description and determine if it violates any of the "red flag" criteria supplied by the candidate.
+    If the job description violates any of the red flag criteria, provide a concise analysis of the red flag violation.
+    By default, the job description does not violate any red flag criteria.
+    You should only return a red_flag_violation of True if the job description explicitly violates any of the red flag criteria.
+    If you are not sure, return a red_flag_violation of False and a red_flag_analysis of "Not sure if the job description violates any red flag criteria."
+
+    Red Flag Criteria: {red_flag_criteria}
+
+    Job Description: {job_info}
+  expected_output: >
+    A JSON object following the following structure:
+    - red_flag_violation: True if the job description violates any of the red flag criteria, False otherwise
+    - red_flag_analysis: A concise analysis of the red flag violation, including the job's requirements, the candidates skills & experience, and any additional notes.
+
 read_cv_task:
   description: >
     Extract relevant information from the candidate's profile, including professional experience and freelance project history.

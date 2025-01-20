@@ -3,15 +3,17 @@ from crewai.flow.flow import Flow, listen, start
 from pydantic import BaseModel
 
 from .crews.match_analysis_crew.match_analysis_crew import MatchAnalysisCrew
+from .crews.prescreen_crew.prescreen_crew import PrescreenCrew
 
 
 class LeadScoringState(BaseModel):
-    data: dict = {}
     match_analysis: str = ""
     match_strength: str = ""
     candidate_data: str = ""
     job_info: str = ""
-    num: int = 0
+    red_flag_criteria: str = ""
+    red_flag_violation: bool = False
+    red_flag_analysis: str = ""
 
 
 class LeadScoringFlow(Flow[LeadScoringState]):
@@ -22,26 +24,55 @@ class LeadScoringFlow(Flow[LeadScoringState]):
 
         if inputs is not None:
             self._initialize_state(inputs)
-            self.state.candidate_data = inputs["data"]["candidate_data"]
-            self.state.job_info = inputs["data"]["job_info"]
-
-        print(f"State: {self.state}")
+            self.state.candidate_data = inputs["candidate_data"]
+            self.state.job_info = inputs["job_info"]
+            self.state.red_flag_criteria = inputs["red_flag_criteria"]
 
     @start()
+    def prescreen(self):
+        print("Running prescreen...")
+        red_flag_analysis_inputs = {
+            "red_flag_criteria": self.state.red_flag_criteria,
+            "job_info": self.state.job_info,
+        }
+        result = PrescreenCrew().crew().kickoff(inputs=red_flag_analysis_inputs)
+        print(f"Prescreen result: {result}")
+
+        self.state.red_flag_violation = result["red_flag_violation"]
+        self.state.red_flag_analysis = result["red_flag_analysis"]
+
+    @listen(prescreen)
     def run_match_analysis(self):
-        print("Running match analysis")
+        print("Running match analysis...")
+        print(f"State: {self.state}")
+
+        if self.state.red_flag_violation:
+            print("Red flag violation detected, skipping match analysis")
+            self.state.match_strength = "-1"
+            self.state.match_analysis = "AUTO-VETO: " + self.state.red_flag_analysis
+            return
+
         analysis_input = {
             "candidate_data": self.state.candidate_data,
             "job_info": self.state.job_info,
         }
         result = MatchAnalysisCrew().crew().kickoff(inputs=analysis_input)
 
-        print("Match analysis generated", result.raw)
-        self.state.match_analysis = result.raw
+        print("Match analysis generated", result)
+
+        self.state.match_analysis = result["match_analysis"]
+        self.state.match_strength = result["match_strength"]
 
     @listen(run_match_analysis)
     def next_steps_placeholder(self):
         print("Placeholder for next steps to run after initial match analysis...")
+        print(f"FINAL State: {self.state}")
+
+        # Return JSON object with match_analysis and match_strength
+        return {
+            "match_analysis": self.state.match_analysis,
+            "match_strength": self.state.match_strength,
+        }
 
 
 async def crew_kickoff(data):

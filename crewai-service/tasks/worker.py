@@ -1,9 +1,9 @@
 import asyncio
 from collections import defaultdict
 
-from crewai_service.api_client import update_task_details
-from crewai_service.logger import logger
-from crewai_service.task_processor import process_task
+from tasks.api_client import update_task_details
+from tasks.logger import logger
+from tasks.task_processor import process_task
 
 
 async def worker(worker_id, task_queue, tasks_in_progress, task_locks, config):

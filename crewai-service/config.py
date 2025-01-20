@@ -19,7 +19,7 @@ class Config:
     MAX_TASK_ATTEMPTS = int(os.getenv("MAX_TASK_ATTEMPTS", "3"))
     MAX_NUM_WORKERS = int(os.getenv("MAX_NUM_WORKERS", "2"))
     HEARTBEAT_INTERVAL_SECONDS = int(os.getenv("HEARTBEAT_INTERVAL_SECONDS", "10"))
-    TASK_FETCH_INTERVAL_SECONDS = int(os.getenv("TASK_FETCH_INTERVAL_SECONDS", "3000"))
+    TASK_FETCH_INTERVAL_SECONDS = int(os.getenv("TASK_FETCH_INTERVAL_SECONDS", "10"))
     # MAX_CHUNK_SIZE_BYTES = int(os.getenv("MAX_CHUNK_SIZE_BYTES", str(24 * 1024 * 1024)))
     # OPENAI_MODEL = os.getenv("OPENAI_MODEL", "whisper-1")
 

@@ -1,7 +1,7 @@
 from aiohttp import web
-from crewai_service.logger import logger
 from match_analysis_flow.src.match_analysis_flow.main import crew_kickoff
 from tasks.fetcher import trigger_fetch
+from tasks.logger import logger
 
 
 async def handle_manual_trigger(request):

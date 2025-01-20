@@ -1,12 +1,12 @@
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List
 
 import aiohttp
 
 # import tiktoken
-from crewai_service.config import HEADERS, config
-from crewai_service.logger import logger
-from crewai_service.models import JobToAnalyze, MatchAnalysis, MatchProcessingTask
+from config import HEADERS, config
+from tasks.logger import logger
+from tasks.models import MatchProcessingTask
 
 
 class ApiError(Exception):
@@ -74,59 +74,3 @@ async def create_new_match(create_data: Dict[str, Any]) -> None:
                 response.raise_for_status()
     except aiohttp.ClientError as error:
         logger.error(f"Failed to create match details for match: {error}")
-
-
-# async def fetch_asset(asset_id: str) -> Optional[Asset]:
-#     try:
-#         url = f"{config.API_BASE_URL}/asset?assetId={asset_id}"
-
-#         async with aiohttp.ClientSession() as session:
-#             async with session.get(url, headers=HEADERS) as response:
-#                 if response.status == 200:
-#                     data = await response.json()
-
-#                     if data:
-#                         return Asset(**data)
-
-#                     return None
-
-#                 else:
-#                     logger.error(f"Error fetching asset: {response.status}")
-#                     return None
-#     except aiohttp.ClientError as error:
-#         logger.error(f"Error fetching asset: {error}")
-#         return None
-
-
-# async def fetch_asset_file(file_url: str) -> bytes:
-#     try:
-#         async with aiohttp.ClientSession() as session:
-#             async with session.get(file_url, headers=HEADERS) as response:
-#                 response.raise_for_status()
-#                 return await response.read()
-#     except aiohttp.ClientError as error:
-#         logger.error(f"Error fetching asset file: {error}")
-#         raise ApiError("Failed to fetch asset file", status_code=500)
-
-
-# async def update_asset_content(asset_id: str, content: str) -> None:
-#     try:
-#         encoding = tiktoken.encoding_for_model("gpt-4o")
-#         tokens = encoding.encode(content)
-#         token_count = len(tokens)
-
-#         update_data = {
-#             "content": content,
-#             "tokenCount": token_count,
-#         }
-
-#         async with aiohttp.ClientSession() as session:
-#             url = f"{config.API_BASE_URL}/asset?assetId={asset_id}"
-#             async with session.patch(
-#                 url, json=update_data, headers=HEADERS
-#             ) as response:
-#                 response.raise_for_status()
-
-#     except aiohttp.ClientError as error:
-#         logger.error(f"Failed to update asset content for asset {asset_id}: {error}")
-#         raise ApiError("Failed to update asset content", status_code=500)

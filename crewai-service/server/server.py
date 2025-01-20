@@ -3,10 +3,10 @@ import os
 
 import aiohttp_cors
 from aiohttp import web
-from crewai_service.config import config
-from crewai_service.logger import logger
+from config import config
 from server.routes import setup_routes
 from tasks.fetcher import task_fetcher
+from tasks.logger import logger
 from tasks.worker import worker
 
 

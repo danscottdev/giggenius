@@ -34,6 +34,5 @@ class MatchAnalysis(BaseModel):
     job_id: str
     match_strength: str
     match_analysis: str
-    # tokenCount: int
     created_at: datetime
     updated_at: datetime

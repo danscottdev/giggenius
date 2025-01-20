@@ -2,8 +2,8 @@ import asyncio
 from datetime import datetime
 
 from config import config
-from crewai_service.api_client import fetch_tasks, update_task_details
-from crewai_service.logger import logger
+from tasks.api_client import fetch_tasks, update_task_details
+from tasks.logger import logger
 
 manual_trigger_event = asyncio.Event()
 
