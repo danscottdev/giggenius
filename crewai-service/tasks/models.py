@@ -35,5 +35,7 @@ class MatchAnalysis(BaseModel):
 
 
 class PrescreenResult(BaseModel):
+    client_score: int
+    client_analysis: str
     red_flag_violation: bool
     red_flag_analysis: str

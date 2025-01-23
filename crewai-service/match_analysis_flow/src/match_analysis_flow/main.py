@@ -1,4 +1,6 @@
 #!/usr/bin/env python
+import json
+
 from crewai.flow.flow import Flow, listen, start
 from pydantic import BaseModel
 
@@ -14,32 +16,52 @@ class LeadScoringState(BaseModel):
     red_flag_criteria: str = ""
     red_flag_violation: bool = False
     red_flag_analysis: str = ""
+    client_info: str = ""
+    client_score: int = 0
+    client_analysis: str = ""
 
 
 class LeadScoringFlow(Flow[LeadScoringState]):
     def pre_kickoff(self, inputs):
         ## Due to crewAI flow existing within broader python async code, we need to use this to pre-kickoff the flow to set the state
         ## Probably a better way to refactor this. But this works for now.
-        print(f"Pre-kickoff inputs: {inputs}")
+        # print(f"Pre-kickoff inputs: {inputs}")
+        print("--------")
+        # Print typeof client_info
+        print(f"TYPE Client info: {type(inputs['client_info'])}")
+        print(f"Client info: {inputs['client_info']}")
+        print("--------")
 
         if inputs is not None:
             self._initialize_state(inputs)
             self.state.candidate_data = inputs["candidate_data"]
             self.state.job_info = inputs["job_info"]
             self.state.red_flag_criteria = inputs["red_flag_criteria"]
+            self.state.client_info = inputs["client_info"]
 
     @start()
     def prescreen(self):
         print("Running prescreen...")
+        print(f"State: {self.state}")
+        print(f"Client info type: {type(self.state.client_info)}")
+        print(f"Client info: {self.state.client_info}")
+
+        # Run prescreen
         red_flag_analysis_inputs = {
             "red_flag_criteria": self.state.red_flag_criteria,
             "job_info": self.state.job_info,
+            "client_info": self.state.client_info,
         }
+
+        print(f"Red flag analysis inputs: {red_flag_analysis_inputs}")
+
         result = PrescreenCrew().crew().kickoff(inputs=red_flag_analysis_inputs)
         print(f"Prescreen result: {result}")
 
         self.state.red_flag_violation = result["red_flag_violation"]
         self.state.red_flag_analysis = result["red_flag_analysis"]
+        self.state.client_score = result["client_score"]
+        self.state.client_analysis = result["client_analysis"]
 
     @listen(prescreen)
     def run_match_analysis(self):
@@ -72,6 +94,8 @@ class LeadScoringFlow(Flow[LeadScoringState]):
         return {
             "match_analysis": self.state.match_analysis,
             "match_strength": self.state.match_strength,
+            "client_score": self.state.client_score,
+            "client_analysis": self.state.client_analysis,
         }
 
 

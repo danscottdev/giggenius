@@ -30,6 +30,14 @@ async def process_task(task: MatchProcessingTask) -> None:
             "description": job["upwk_description"],
         }
 
+        client_info = {
+            "client_location": job["upwk_client_location"],
+            "client_rating": job["upwk_client_rating"],
+            "client_spend": job["upwk_client_spend"],
+            # "proposal_count": job["upwk_proposal_count"],
+            "payment_verified": job["upwk_client_payment_verified"],
+        }
+
         user = await fetch_user(task.user_id)
         candidate_data = user["user_summary"]
 
@@ -37,7 +45,10 @@ async def process_task(task: MatchProcessingTask) -> None:
             "candidate_data": candidate_data,
             "job_info": f"JOB TITLE: {parsed_job['title']}\n\nJOB DESCRIPTION: {parsed_job['description']}",
             "red_flag_criteria": user["user_job_vetos"],
+            "client_info": f"CLIENT LOCATION: {client_info['client_location']}\n\nCLIENT RATING: {client_info['client_rating']}\n\nCLIENT TOTAL SPEND: {client_info['client_spend']}\n\nCLIENT PAYMENT VERIFIED?: {client_info['payment_verified']}",
         }
+
+        # logger.info("!!!!Inputs: " + json.dumps(inputs))
 
         result = await crew_kickoff(inputs)
         print(f"Result: {result}")

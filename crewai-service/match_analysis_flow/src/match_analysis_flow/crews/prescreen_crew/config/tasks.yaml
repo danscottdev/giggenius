@@ -1,3 +1,23 @@
+client_screener_task:
+  description: >
+    Analyze the data provided about the client and generate a score and analysis of the client's quality.
+    The score should be between 0 and 100, where 100 is the highest quality and 0 is the lowest quality.
+    The analysis should be a concise analysis of the client's score, including the client's location, rating, spend, and payment verified status.
+
+    Guidelines:
+    - A client with payment verified status is higher quality than a client without payment verified status.
+    - Clients in the US, the UK, Canada, Australia, and other developed countries are higher quality than clients in other countries.
+    - Clients in India and Pakistan can be automatically rejected.
+    - A client's rating should be weighted against their total spend amount.
+    - A client with a high rating and high spend is higher quality than a client with a low rating and low spend.
+
+    Client Information: {client_info}
+
+  expected_output: >
+    A JSON object following the following structure:
+    - client_analysis: A very concise analysis of the client's score, including the client's location, rating, spend, and payment verified status.
+    - client_score: A score between 0 and 100, where 100 is the highest quality and 0 is the lowest quality
+
 red_flag_check_task:
   description: >
     Analyze the job description and determine if it violates any of the "red flag" criteria supplied by the candidate.
@@ -13,3 +33,5 @@ red_flag_check_task:
     A JSON object following the following structure:
     - red_flag_violation: True if the job description violates any of the red flag criteria, False otherwise
     - red_flag_analysis: A concise analysis of the red flag violation, including the job's requirements, the candidates skills & experience, and any additional notes.
+    - client_score: (provided by client_screener_task)
+    - client_analysis: (provided by client_screener_task)
