@@ -1,12 +1,13 @@
 import asyncio
-from collections import defaultdict
 
 from tasks.api_client import update_task_details
 from tasks.logger import logger
 from tasks.task_processor import process_task
 
+# from collections import defaultdict
 
-async def worker(worker_id, task_queue, tasks_in_progress, task_locks, config):
+
+async def worker(worker_id, task_queue, tasks_in_progress, task_locks):
     """
     Continuously consume tasks from the queue and process them.
     """

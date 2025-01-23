@@ -2,8 +2,6 @@ from datetime import datetime
 from typing import Any, Dict, List
 
 import aiohttp
-
-# import tiktoken
 from config import HEADERS, config
 from tasks.logger import logger
 from tasks.models import MatchProcessingTask

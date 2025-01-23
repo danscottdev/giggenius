@@ -1,18 +1,20 @@
 from crewai import Agent, Crew, Process, Task
 from crewai.project import CrewBase, agent, crew, task
-from pydantic import BaseModel
+
+# from pydantic import BaseModel
+from tasks.models import MatchAnalysis
 
 # Purpose of this crew is to take in a candidate CV and job description and return a match analysis
 # It will analyze the contents of the job description and compare to the candidate information, and return a match analysis and match strength
 
 
-class MatchAnalysis(BaseModel):
-    data: dict = {}
-    match_analysis: str = ""
-    match_strength: str = ""
-    candidate_data: str = ""
-    job_info: str = ""
-    num: int = 0
+# class MatchAnalysis(BaseModel):
+#     # data: dict = {}
+#     # match_analysis: str = ""
+#     # match_strength: str = ""
+#     # candidate_data: str = ""
+#     # job_info: str = ""
+#     # num: int = 0
 
 
 @CrewBase
@@ -27,7 +29,7 @@ class MatchAnalysisCrew:
         return Agent(
             config=self.agents_config["cv_reader"],
             # tools=[FileReadTool()],
-            verbose=True,
+            verbose=False,
             allow_delegation=False,
         )
 
@@ -36,7 +38,7 @@ class MatchAnalysisCrew:
         return Agent(
             config=self.agents_config["matcher"],
             # tools=[FileReadTool(), CSVSearchTool()],
-            verbose=True,
+            verbose=False,
             allow_delegation=False,
         )
 
@@ -56,8 +58,8 @@ class MatchAnalysisCrew:
     def crew(self) -> Crew:
         """Creates the Match Analysis Crew"""
         return Crew(
-            agents=self.agents,  # Automatically created by the @agent decorator
-            tasks=self.tasks,  # Automatically created by the @task decorator
+            agents=self.agents,
+            tasks=self.tasks,
             process=Process.sequential,
-            verbose=True,
+            verbose=False,
         )

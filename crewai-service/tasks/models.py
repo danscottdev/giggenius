@@ -30,9 +30,10 @@ class JobToAnalyze(BaseModel):
 
 
 class MatchAnalysis(BaseModel):
-    id: str
-    job_id: str
     match_strength: str
     match_analysis: str
-    created_at: datetime
-    updated_at: datetime
+
+
+class PrescreenResult(BaseModel):
+    red_flag_violation: bool
+    red_flag_analysis: str

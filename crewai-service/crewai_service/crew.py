@@ -3,12 +3,12 @@ from crewai.project import CrewBase, agent, crew, task
 from crewai_service.logger import logger
 from crewai_tools import CSVSearchTool, FileReadTool
 from pydantic import BaseModel
+from tasks.models import MatchAnalysis
 
-
-class MatchAnalysis(BaseModel):
-    job_title: str
-    match_strength: str
-    match_analysis: str
+# class MatchAnalysis(BaseModel):
+#     job_title: str
+#     match_strength: str
+#     match_analysis: str
 
 
 @CrewBase

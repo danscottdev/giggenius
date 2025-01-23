@@ -58,7 +58,7 @@ async def start_background_tasks(app, task_manager):
                 task_manager.task_queue,
                 task_manager.tasks_in_progress,
                 task_manager.task_locks,
-                config,
+                # config,
             )
         )
         for i in range(config.MAX_NUM_WORKERS)
