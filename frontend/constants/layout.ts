@@ -1,0 +1,7 @@
+export const LAYOUT_CONSTANTS = {
+	MOBILE_BREAKPOINT: 1024,
+	SIDEBAR_WIDTH: {
+		EXPANDED: 60,
+		COLLAPSED: 28,
+	},
+} as const;
