@@ -145,6 +145,12 @@ function JobFeed({ jobs }: JobFeedProps) {
 													</Button>
 												</div>
 											</div>
+											<div className="mt-4 w-full">
+												<h4 className="font-bold">Proposal</h4>
+												<p className="border border-gray-200 bg-gray-100 p-3">
+													{job.matches[0]?.proposal}
+												</p>
+											</div>
 										</TableCell>
 									</TableRow>
 								)}

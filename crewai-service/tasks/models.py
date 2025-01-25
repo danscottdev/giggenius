@@ -39,3 +39,7 @@ class PrescreenResult(BaseModel):
     client_analysis: str
     red_flag_violation: bool
     red_flag_analysis: str
+
+
+class Proposal(BaseModel):
+    proposal: str

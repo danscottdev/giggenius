@@ -1,0 +1,15 @@
+proposal_generator_task:
+  description: >
+    Generate a proposal/cover letter for a job
+    The proposal should be a concise proposal/cover letter for the job, including the job's requirements, the candidate's skills & experience, and any additional notes.
+
+    Guidelines:
+    - The proposal should be a concise proposal/cover letter for the job, including the job's requirements, the candidate's skills & experience, and any additional notes.
+    - The proposal should be tailored to the candidate's skills & experience, and the job's requirements.
+
+    Job Description: {job_info}
+    Candidate Resume: {candidate_data}
+
+  expected_output: >
+    A JSON object following the following structure:
+    - proposal: A concise proposal/cover letter for the job, including the job's requirements, the candidate's skills & experience, and any additional notes.

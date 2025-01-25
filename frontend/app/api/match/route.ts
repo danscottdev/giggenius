@@ -15,6 +15,7 @@ export async function POST(request: Request) {
 				// user_id: data.user_id,
 				match_strength: data.match_analysis_status.match_strength,
 				match_analysis: data.match_analysis_status.match_analysis,
+				proposal: data.match_analysis_status.proposal,
 				// user_grade: data.user_grade,
 				// user_feedback: data.user_feedback,
 				client_score: data.match_analysis_status.client_score,
