@@ -11,8 +11,9 @@ import {
 } from "@/components/ui/table";
 import { ChevronDown, ChevronRight } from "lucide-react";
 import { JobWithMatches } from "@/server/db/schema";
-import { Button } from "./ui/button";
+// import { Button } from "./ui/button";
 import { truncateText } from "@/lib/utils";
+import JobDetail from "./JobDetail";
 
 interface JobFeedProps {
 	jobs: JobWithMatches[];
@@ -51,7 +52,11 @@ function JobFeed({ jobs }: JobFeedProps) {
 						return (
 							<React.Fragment key={job.id}>
 								<TableRow
-									className={`cursor-pointer hover:bg-gray-100 ${highlightClass}`}
+									className={`cursor-pointer hover:bg-gray-100 ${highlightClass} ${
+										expandedRows.has(job.id)
+											? "border-2 border-gray-200 border-b-0 bg-emerald-50 drop-shadow-md hover:bg-emerald-100"
+											: ""
+									}`}
 									onClick={() => toggleRow(job.id)}
 								>
 									<TableCell>
@@ -78,80 +83,11 @@ function JobFeed({ jobs }: JobFeedProps) {
 								</TableRow>
 								{expandedRows.has(job.id) && (
 									<TableRow>
-										<TableCell colSpan={6} className="bg-gray-50">
-											<div className="p-0 flex flex-row justify-between align-center">
-												<div className="w-full border p-4">
-													<h3 className="font-bold">{job.upwk_title}</h3>
-													<p>{job.upwk_description}</p>
-													<p className="text-sm text-gray-700">
-														<span className="font-medium">Budget:</span>{" "}
-														{job.upwk_budget}
-													</p>
-													<div className="mt-4">
-														<h4 className="font-bold">Client Info</h4>
-														<p>
-															<span className="font-medium">
-																Client Location:
-															</span>{" "}
-															{job.upwk_client_location}
-														</p>
-														<p>
-															<span className="font-medium">
-																Client Rating:
-															</span>{" "}
-															{job.upwk_client_rating}
-														</p>
-														<p>
-															<span className="font-medium">Client Spend:</span>{" "}
-															{job.upwk_client_spend}
-														</p>
-														<p>
-															<span className="font-medium">
-																Proposal Count:
-															</span>{" "}
-															{job.upwk_proposal_count}
-														</p>
-														<p>
-															<span className="font-medium">
-																Payment Verified:
-															</span>{" "}
-															{job.upwk_client_payment_verified}
-														</p>
-													</div>
-													<div className="mt-4">
-														<a href={job.upwk_url} target="_blank">
-															<Button>View Job Listing</Button>
-														</a>
-													</div>
-												</div>
-												<div className="w-1/2 border p-4">
-													<p className="font-bold text-center mb-2">
-														Match Strength: {matchStrength} / 5
-													</p>
-													<p className="border border-gray-200 bg-gray-100 p-3">
-														Match Analysis: {job.matches[0]?.match_analysis}
-													</p>
-													<p className="border border-gray-200 bg-gray-100 p-3">
-														Client Score: {job.matches[0]?.client_score}
-													</p>
-													<p className="border border-gray-200 bg-gray-100 p-3">
-														Client Analysis: {job.matches[0]?.client_analysis}
-													</p>
-													<Button className="w-full mt-2">
-														Rate Match Analysis
-													</Button>
-													<Button className="w-full mt-2">
-														Generate Proposal
-													</Button>
-												</div>
-											</div>
-											<div className="mt-4 w-full">
-												<h4 className="font-bold">Proposal</h4>
-												<p className="border border-gray-200 bg-gray-100 p-3">
-													{job.matches[0]?.proposal}
-												</p>
-											</div>
-										</TableCell>
+										<JobDetail
+											job={job}
+											matchStrength={matchStrength}
+											onCollapse={() => toggleRow(job.id)}
+										/>
 									</TableRow>
 								)}
 							</React.Fragment>

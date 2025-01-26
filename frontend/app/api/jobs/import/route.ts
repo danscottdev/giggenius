@@ -34,6 +34,7 @@ export async function POST(request: Request) {
 		}
 
 		const jobsData = await request.json();
+		console.log("Jobs data:", jobsData);
 
 		const existingJobs = await db
 			.select({ upwk_url: jobsTable.upwk_url })
@@ -49,9 +50,16 @@ export async function POST(request: Request) {
 			);
 
 		const newJobs = jobsData.filter((job: Job) => {
-			return !existingJobs.some(
+			const hasValidDescription = job.upwk_description?.trim().length > 0;
+			const isNewJob = !existingJobs.some(
 				(existingJob) => existingJob.upwk_url === job.upwk_url
 			);
+
+			if (!hasValidDescription) {
+				console.log(`Skipping job with empty description: ${job.upwk_url}`);
+			}
+
+			return isNewJob && hasValidDescription;
 		});
 
 		let insertedJobs = [];
