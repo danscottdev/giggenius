@@ -1,19 +1,3 @@
-red_flag_check_task:
-  description: >
-    Analyze the job description and determine if it violates any of the "red flag" criteria supplied by the candidate.
-    If the job description violates any of the red flag criteria, provide a concise analysis of the red flag violation.
-    By default, the job description does not violate any red flag criteria.
-    You should only return a red_flag_violation of True if the job description explicitly violates any of the red flag criteria.
-    If you are not sure, return a red_flag_violation of False and a red_flag_analysis of "Not sure if the job description violates any red flag criteria."
-
-    Red Flag Criteria: {red_flag_criteria}
-
-    Job Description: {job_info}
-  expected_output: >
-    A JSON object following the following structure:
-    - red_flag_violation: True if the job description violates any of the red flag criteria, False otherwise
-    - red_flag_analysis: A concise analysis of the red flag violation, including the job's requirements, the candidates skills & experience, and any additional notes.
-
 read_cv_task:
   description: >
     Extract relevant information from the candidate's profile, including professional experience and freelance project history.
@@ -30,12 +14,21 @@ read_cv_task:
 
 match_cv_task:
   description: >
-    Match the Candidate to the job opportunity based on skills, experience, and project history.
-    Evaluate how well the candidate's profile fits the job description,
-    focusing on the alignment of skills, work history, and key achievements
-    with the job requirements.
+    Analyze the job description and the candidate's profile and match the candidate to the job opportunity based on skills, experience, and project history.
     Also take into account the candidate's preferences in terms of what types of jobs they are interested in.
-    In your output, refer to the candidate by their name.
+    Based on your analysis, determine the strength of the match between the candidate and the job on a scale of 0-5, where 5 is the strongest match.
+
+    Only include information that is directly relevant to the match analysis. 
+    IMPORTANT:Do not include any information about the candidate that is not directly relevant to the job description.
+    Do not state the candidate's name in your output, instead phrase your analysis as if you are talking directly to the candidate.
+    Do not include any unnecessary information in your output, such as "Here is my analysis of the match between the candidate and the job:" or "Based on my analysis, the candidate's profile matches the job description."
+
+    If you feel like you cannot confidently determine the strength of the match, return a match_strength of 0 and a match_analysis of "Need more information: " + your reasoning on why you cannot confidently determine the strength of the match.
+
+    Examples of match_analysis:
+    - "Strong match due to your extensive experience with WordPress plugin development and API integration."
+    - "Weak match due to your lack of experience with React Native"
+    - "Moderate match due to experience with FullStack developement, despite the job requesting UI/UXdesign experience"
 
     Job information: {job_info}
 
@@ -43,5 +36,5 @@ match_cv_task:
   expected_output: >
     A JSON object following the following structure:
     - job_title: The title of the job opportunity
-    - match_strength: The strength of the match between the CV and the job on a scale of 0-5
-    - match_analysis: A concise analysis of the match, including the job's requirements, the candidates skills & experience, and any additional notes. Refer to the candidate by their name.
+    - match_strength: The strength of the match between the CV and the job on a scale of 0-5, where 5 is the strongest match
+    - match_analysis: A concise analysis (between 1-3 sentences) explaining how you determined the match strength.

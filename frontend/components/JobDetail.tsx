@@ -98,9 +98,10 @@ const JobDetail: React.FC<JobDetailProps> = ({
 								<div className="flex items-center">
 									<Star className="w-4 h-4 fill-primary text-primary mr-1" />
 									<span>
-										{job.upwk_client_rating
+										{/* {job.upwk_client_rating
 											? parseInt(job.upwk_client_rating).toFixed(1)
-											: "N/A"}
+											: "N/A"} */}
+										{job.upwk_client_rating}
 									</span>
 								</div>
 

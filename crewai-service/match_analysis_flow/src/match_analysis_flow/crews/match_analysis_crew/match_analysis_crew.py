@@ -1,5 +1,6 @@
 from crewai import Agent, Crew, Process, Task
 from crewai.project import CrewBase, agent, crew, task
+from langchain.chat_models import ChatOpenAI
 
 # from pydantic import BaseModel
 from tasks.models import MatchAnalysis
@@ -15,6 +16,8 @@ from tasks.models import MatchAnalysis
 #     # candidate_data: str = ""
 #     # job_info: str = ""
 #     # num: int = 0
+
+llm = ChatOpenAI(model="gpt-4-turbo", temperature=0.7)
 
 
 @CrewBase
@@ -40,6 +43,7 @@ class MatchAnalysisCrew:
             # tools=[FileReadTool(), CSVSearchTool()],
             verbose=False,
             allow_delegation=False,
+            llm=llm,
         )
 
     @task
