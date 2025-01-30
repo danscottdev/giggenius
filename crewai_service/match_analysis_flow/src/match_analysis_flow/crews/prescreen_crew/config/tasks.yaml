@@ -27,11 +27,15 @@ client_screener_task:
 
 red_flag_check_task:
   description: >
-    Analyze the job description and determine if it violates any of the "red flag" criteria supplied by the candidate.
-    If the job description violates any of the red flag criteria, provide a concise analysis of the red flag violation.
-    By default, the job description does not violate any red flag criteria.
-    You should only return a red_flag_violation of True if the job description explicitly violates any of the red flag criteria.
+    Analyze the provided job description and determine if it PASSES or FAILS the prescreen process.
+    By default, the job description PASSES the prescreen process.
+
+    Check the job description against each of the individual Red Flag Criteria and provide output as a list of PASS or FAIL.
+    A PASS is a job description that does not violate any of the Red Flag Criteria.
+    A FAIL is a job description that violates one or more of the Red Flag Criteria.
+    A job description should only be flagged as a FAIL if it explicitly violates any of the Red Flag Criteria.
     If you are not sure, return a red_flag_violation of False and a red_flag_analysis of "Not sure if the job description violates any red flag criteria."
+    If the job description violates any of the Red Flag Criteria, return a red_flag_violation of True and a red_flag_analysis of "The job description violates the following rule: " + the rule that was violated.
 
     Red Flag Criteria: {red_flag_criteria}
 

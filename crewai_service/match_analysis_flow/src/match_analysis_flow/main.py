@@ -82,7 +82,7 @@ class LeadScoringFlow(Flow[LeadScoringState]):
         }
         result = MatchAnalysisCrew().crew().kickoff(inputs=analysis_input)
 
-        print("Match analysis generated", result)
+        # print("Match analysis generated", result)
 
         self.state.match_analysis = result["match_analysis"]
         self.state.match_strength = result["match_strength"]
@@ -90,7 +90,7 @@ class LeadScoringFlow(Flow[LeadScoringState]):
     @listen(run_match_analysis)
     def run_proposal_generation(self):
         print("Running proposal generation...")
-        print(f"FINAL State: {self.state}")
+        # print(f"FINAL State: {self.state}")
 
         try:
             match_strength = int(self.state.match_strength)

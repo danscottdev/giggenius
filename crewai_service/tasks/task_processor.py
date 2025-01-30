@@ -111,7 +111,7 @@ async def fetch_job(job_id: str) -> dict:
             async with session.get(url, headers=HEADERS) as response:
                 if response.status == 200:
                     data = await response.json()
-                    logger.info(f"Job fetched: {data}")
+                    # logger.info(f"Job fetched: {data}")
                     return data
                 else:
                     logger.error(f"Error fetching job: {response.status}")
@@ -132,7 +132,7 @@ async def fetch_user(user_id: str) -> dict:
             async with session.get(url, headers=HEADERS) as response:
                 if response.status == 200:
                     data = await response.json()
-                    logger.info(f"User fetched: {data}")
+                    # logger.info(f"User fetched: {data}")
                     return data
                 else:
                     logger.error(f"Error fetching user: {response.status}")

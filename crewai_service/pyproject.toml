@@ -3,6 +3,10 @@ name = "crewai_service"
 version = "0.1.0"
 description = "crewai_service using crewAI"
 authors = ["Your Name <you@example.com>"]
+packages = [
+	{ include = "match_analysis_flow", from = "match_analysis_flow/src" },
+	{ include = "tasks" },
+]
 
 [tool.poetry.dependencies]
 python = ">=3.10,<3.13"
@@ -12,7 +16,7 @@ crewai = {extras = ["tools"], version = "^0.95.0"}
 
 [tool.poetry.scripts]
 crewai_service = "main:main"
-train = "crewai_service.main:train"
+train = "crewai_service.match_analysis_flow.crews.prescreen_crew.main:train"
 
 [build-system]
 requires = ["poetry-core"]

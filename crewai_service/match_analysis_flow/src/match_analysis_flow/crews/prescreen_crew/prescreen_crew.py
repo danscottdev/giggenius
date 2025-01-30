@@ -1,5 +1,5 @@
 from crewai import Agent, Crew, Process, Task
-from crewai.project import CrewBase, agent, crew, task
+from crewai.project import CrewBase, agent, before_kickoff, crew, task
 
 # from pydantic import BaseModel
 from tasks.models import PrescreenResult
@@ -19,8 +19,6 @@ class PrescreenCrew:
 
     @agent
     def client_screener(self) -> Agent:
-        print(f"Client screener config:")
-        print(f"Client screener config: {self.agents_config['client_screener']}")
         return Agent(
             config=self.agents_config["client_screener"],
             verbose=True,
@@ -31,15 +29,12 @@ class PrescreenCrew:
     def red_flag_checker(self) -> Agent:
         return Agent(
             config=self.agents_config["red_flag_checker"],
-            verbose=False,
+            verbose=True,
             allow_delegation=False,
         )
 
     @task
     def client_screener_task(self) -> Task:
-        print(
-            f"Client screener task config: {self.tasks_config['client_screener_task']}"
-        )
         return Task(
             config=self.tasks_config["client_screener_task"],
             agent=self.client_screener(),
