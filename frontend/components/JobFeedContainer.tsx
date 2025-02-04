@@ -22,9 +22,14 @@ function JobFeedContainer({ jobs }: { jobs: Job[] }) {
 				const strongJobs = await axios.get("/api/jobs?strongOnly=true");
 				setFilteredJobs(strongJobs.data);
 				break;
+			case "trash":
+				// API call to get jobs with match strength of -1
+				const trashJobs = await axios.get("/api/jobs?trashOnly=true");
+				setFilteredJobs(trashJobs.data);
+				break;
 			case "new":
-				// API endpoint fetches jobs by newest first by default
-				const newJobs = await axios.get("/api/jobs");
+				// API endpoint fetches jobs by newest first, excluding trash
+				const newJobs = await axios.get("/api/jobs?excludeTrash=true");
 				setFilteredJobs(newJobs.data);
 				break;
 			default:
