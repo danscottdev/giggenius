@@ -3,7 +3,7 @@ import json
 
 import aiohttp
 from config import HEADERS, config
-from match_analysis_flow.src.match_analysis_flow.main import crew_kickoff
+from lead_score_flow.flow import crew_kickoff
 from tasks.api_client import (
     create_new_match,
     update_task_details,

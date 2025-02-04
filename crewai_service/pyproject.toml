@@ -1,22 +1,29 @@
+[project]
+name = "crewai_service"
+version = "0.1.0"
+description = "crewai_service using crewAI"
+authors = [
+    {name = "Your Name", email = "you@example.com"}
+]
+
 [tool.poetry]
 name = "crewai_service"
 version = "0.1.0"
 description = "crewai_service using crewAI"
 authors = ["Your Name <you@example.com>"]
 packages = [
-	{ include = "match_analysis_flow", from = "match_analysis_flow/src" },
-	{ include = "tasks" },
+    { include = "lead_score_flow" }
 ]
 
 [tool.poetry.dependencies]
 python = ">=3.10,<3.13"
 aiohttp = "^3.8.1"
 aiohttp-cors = "^0.7.0"
-crewai = {extras = ["tools"], version = "^0.95.0"}
+crewai = {extras = ["tools"], version = "^0.100.0"}
 
 [tool.poetry.scripts]
 crewai_service = "main:main"
-train = "crewai_service.match_analysis_flow.crews.prescreen_crew.main:train"
+train = "lead_score_flow.crews.prescreen_crew.main:train"
 
 [build-system]
 requires = ["poetry-core"]
