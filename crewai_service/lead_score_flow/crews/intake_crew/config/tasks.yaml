@@ -1,0 +1,21 @@
+technical_analysis_task:
+  description: >
+    Analyze the provided job description from a technical perspective.
+            
+    1. Identify the key technical requirements and skills
+    2. Determine the primary tech stack and tools
+    3. Analyze the technical responsibilities
+    4. Note any specific technical experience requirements
+    5. Identify any unique technical challenges or requirements
+
+    Provide a concise but comprehensive technical summary that will be useful for 
+    matching candidates and identifying potential red flags.
+
+    Return your analysis in a clear, structured format.
+
+    Analyze this job description from a technical perspective: {job_info}
+  expected_output: >
+    A structured summary of the Job Description, including:
+    - Key Technical Requirements
+    - Primary Tech Stack
+    - Technical Responsibilities

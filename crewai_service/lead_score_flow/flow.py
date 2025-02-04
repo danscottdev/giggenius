@@ -1,9 +1,9 @@
 #!/usr/bin/env python
-import json
 
 from crewai.flow.flow import Flow, listen, start
 from pydantic import BaseModel
 
+from .crews.intake_crew.intake_analysis_crew import IntakeAnalysisCrew
 from .crews.match_analysis_crew.match_analysis_crew import MatchAnalysisCrew
 from .crews.prescreen_crew.prescreen_crew import PrescreenCrew
 from .crews.proposal_crew.proposal_crew import ProposalCrew
@@ -21,14 +21,15 @@ class LeadScoringState(BaseModel):
     client_score: int = 0
     client_analysis: str = ""
     proposal: str = ""
+    job_technical_analysis: str = ""
 
 
 class LeadScoringFlow(Flow[LeadScoringState]):
     def pre_kickoff(self, inputs):
         ## Due to crewAI flow existing within broader python async code, we need to use this to pre-kickoff the flow to set the state
         ## Probably a better way to refactor this. But this works for now.
-        # print(f"Pre-kickoff inputs: {inputs}")
-        # print("--------")
+        print(f"Pre-kickoff inputs: {inputs}")
+        print("--------")
         # Print typeof client_info
         # print(f"TYPE Client info: {type(inputs['client_info'])}")
         # print(f"Client info: {inputs['client_info']}")
@@ -42,8 +43,22 @@ class LeadScoringFlow(Flow[LeadScoringState]):
             self.state.client_info = inputs["client_info"]
 
     @start()
+    def intake_analysis(self):
+        print("--------------------------------")
+        print("Running intake analysis...")
+
+        intake_input = {"job_info": self.state.job_info}
+
+        print(f"Intake input: {intake_input}")
+        print("--------------------------------")
+
+        result = IntakeAnalysisCrew().crew().kickoff(inputs=intake_input)
+        print(f"Intake result: {result}")
+        self.state.job_technical_analysis = result
+
+    @listen(intake_analysis)
     def prescreen(self):
-        # print("Running prescreen...")
+        print("Running prescreen...")
         # print(f"State: {self.state}")
         # print(f"Client info type: {type(self.state.client_info)}")
         # print(f"Client info: {self.state.client_info}")
@@ -51,11 +66,13 @@ class LeadScoringFlow(Flow[LeadScoringState]):
         # Run prescreen
         red_flag_analysis_inputs = {
             "red_flag_criteria": self.state.red_flag_criteria,
-            "job_info": self.state.job_info,
+            # "job_info": self.state.job_info,
+            "job_info": self.state.job_technical_analysis,
             "client_info": self.state.client_info,
+            # "job_technical_analysis": self.state.job_technical_analysis,
         }
 
-        # print(f"Red flag analysis inputs: {red_flag_analysis_inputs}")
+        print(f"Red flag analysis inputs: {red_flag_analysis_inputs}")
 
         result = PrescreenCrew().crew().kickoff(inputs=red_flag_analysis_inputs)
         # print(f"Prescreen result: {result}")
