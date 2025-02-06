@@ -34,7 +34,14 @@ class MatchAnalysis(BaseModel):
     match_analysis: str
 
 
+class IntakeAnalysis(BaseModel):
+    complete_description: bool
+    technical_analysis: str
+
+
 class PrescreenResult(BaseModel):
+    complete_description: bool
+
     client_score: int
     client_analysis: str
     red_flag_violation: bool

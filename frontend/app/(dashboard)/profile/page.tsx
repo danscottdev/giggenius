@@ -14,6 +14,7 @@ export default async function UserProfilePage() {
 	const userProfile = {
 		user_id: user?.user_id,
 		user_name: user?.user_name,
+		user_focus: user?.user_focus,
 		user_summary: user?.user_summary,
 		user_skills: user?.user_skills,
 		user_project_history: user?.user_project_history,

@@ -22,14 +22,16 @@ class LeadScoringState(BaseModel):
     client_analysis: str = ""
     proposal: str = ""
     job_technical_analysis: str = ""
+    user_focus: str = ""
+    complete_description: bool = False
 
 
 class LeadScoringFlow(Flow[LeadScoringState]):
     def pre_kickoff(self, inputs):
         ## Due to crewAI flow existing within broader python async code, we need to use this to pre-kickoff the flow to set the state
         ## Probably a better way to refactor this. But this works for now.
-        print(f"Pre-kickoff inputs: {inputs}")
-        print("--------")
+        # print(f"Pre-kickoff inputs: {inputs}")
+        # print("--------")
         # Print typeof client_info
         # print(f"TYPE Client info: {type(inputs['client_info'])}")
         # print(f"Client info: {inputs['client_info']}")
@@ -41,27 +43,48 @@ class LeadScoringFlow(Flow[LeadScoringState]):
             self.state.job_info = inputs["job_info"]
             self.state.red_flag_criteria = inputs["red_flag_criteria"]
             self.state.client_info = inputs["client_info"]
+            self.state.user_focus = inputs["user_focus"]
 
     @start()
     def intake_analysis(self):
-        print("--------------------------------")
         print("Running intake analysis...")
 
-        intake_input = {"job_info": self.state.job_info}
+        intake_input = {
+            "job_info": self.state.job_info,
+            "user_focus": self.state.user_focus,
+        }
 
-        print(f"Intake input: {intake_input}")
-        print("--------------------------------")
+        # print("--------------------------------")
+        # print(f"Intake input: {intake_input}")
+        # print("--------------------------------")
 
         result = IntakeAnalysisCrew().crew().kickoff(inputs=intake_input)
-        print(f"Intake result: {result}")
-        self.state.job_technical_analysis = result
+        # print(f"Intake result: {result}")
+        self.state.job_technical_analysis = result["technical_analysis"]
+        self.state.complete_description = result["complete_description"]
 
     @listen(intake_analysis)
     def prescreen(self):
+        print("--------------------------------")
         print("Running prescreen...")
-        # print(f"State: {self.state}")
-        # print(f"Client info type: {type(self.state.client_info)}")
-        # print(f"Client info: {self.state.client_info}")
+        print(f"State: {self.state}")
+        print("--------------------------------")
+
+        if not self.state.complete_description:
+            print("Incomplete description detected, skipping prescreen")
+            self.state.match_strength = "-1"
+            self.state.match_analysis = (
+                "AUTO-VETO: Project listing deemed as vague or incomplete"
+            )
+            self.state.client_score = 0
+            self.state.client_analysis = (
+                "Not Evaluated: Project listing deemed as vague or incomplete"
+            )
+            self.state.red_flag_violation = True
+            self.state.red_flag_analysis = (
+                "Project listing deemed as vague or incomplete"
+            )
+            return
 
         # Run prescreen
         red_flag_analysis_inputs = {
@@ -69,13 +92,14 @@ class LeadScoringFlow(Flow[LeadScoringState]):
             # "job_info": self.state.job_info,
             "job_info": self.state.job_technical_analysis,
             "client_info": self.state.client_info,
-            # "job_technical_analysis": self.state.job_technical_analysis,
         }
 
         print(f"Red flag analysis inputs: {red_flag_analysis_inputs}")
 
         result = PrescreenCrew().crew().kickoff(inputs=red_flag_analysis_inputs)
-        # print(f"Prescreen result: {result}")
+        print("--------------------------------")
+        print(f"Prescreen result: {result}")
+        print("--------------------------------")
 
         self.state.red_flag_violation = result["red_flag_violation"]
         self.state.red_flag_analysis = result["red_flag_analysis"]

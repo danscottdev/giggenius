@@ -17,7 +17,6 @@ client_screener_task:
     - If Rating is 4.5 or lower, decrease the score by 1.
     - If Rating is 4.0 or lower, decrease the score by 2.
 
-
     Client Information: {client_info}
 
   expected_output: >
@@ -27,14 +26,12 @@ client_screener_task:
 
 red_flag_check_task:
   description: >
-    Analyze the provided job description and determine if it PASSES or FAILS the prescreen process.
-    By default, the job description PASSES the prescreen process.
+    Analyze the provided job description and determine whether or not it FAILS the prescreen process.
 
-    Check the job description against each of the individual Red Flag Criteria and provide output as a list of PASS or FAIL.
-    A PASS is a job description that does not violate any of the Red Flag Criteria.
-    A FAIL is a job description that violates one or more of the Red Flag Criteria.
-    A job description should only be flagged as a FAIL if it explicitly violates any of the Red Flag Criteria.
-    If you are not sure, return a red_flag_violation of False and a red_flag_analysis of "Not sure if the job description violates any red flag criteria."
+    Check the provided job description against each of the individual Red Flag Criteria, and determine if the job description violates any of them.
+    A job description should only be flagged as a FAIL if it explicitly violates any of the Red Flag Criteria and you are sure that it does.
+    Otherwise, the job description should be flagged as a PASS.
+
     If the job description violates any of the Red Flag Criteria, return a red_flag_violation of True and a red_flag_analysis of "The job description violates the following rule: " + the rule that was violated.
 
     Red Flag Criteria: {red_flag_criteria}

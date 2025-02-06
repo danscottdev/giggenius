@@ -5,12 +5,13 @@ import { db } from "./db";
 import {
 	Job,
 	jobsTable,
+	JobWithMatches,
 	Match,
 	matchesTable,
 	UserProfile,
 	userProfilesTable,
 } from "./db/schema";
-import { eq, gte } from "drizzle-orm";
+import { eq, not, and, desc } from "drizzle-orm";
 
 export async function getJobsForUser(): Promise<Job[]> {
 	const { userId } = await auth();
@@ -18,19 +19,30 @@ export async function getJobsForUser(): Promise<Job[]> {
 		throw new Error("User not found");
 	}
 
-	const jobs = await db.query.jobsTable.findMany({
-		where: eq(jobsTable.user_id, userId),
-		orderBy: (jobs, { desc }) => [desc(jobs.updated_at)],
-		with: {
-			matches: {
-				where: gte(matchesTable.match_strength, 0),
-			},
-		},
-		limit: 50,
-	});
+	const results = await db
+		.select()
+		.from(jobsTable)
+		.leftJoin(matchesTable, eq(jobsTable.id, matchesTable.job_id))
+		.where(
+			and(
+				eq(jobsTable.user_id, userId),
+				not(eq(matchesTable.match_strength, -1))
+			)
+		)
+		.orderBy(desc(jobsTable.updated_at))
+		.limit(50)
+		.execute();
 
-	// Filter out jobs that have no qualifying matches
-	return jobs.filter((job) => job.matches.length > 0);
+	const jobs: JobWithMatches[] = results.map((result) => ({
+		...result.jobs,
+		matches: Array.isArray(result.matches)
+			? result.matches
+			: result.matches
+			? [result.matches]
+			: [],
+	}));
+
+	return jobs;
 }
 
 export function getMatchesForJob(job_id: string): Promise<Match[]> {
@@ -67,5 +79,6 @@ export async function updateUserProfile(
 		user_skills: updatedProfile[0].user_skills,
 		user_project_history: updatedProfile[0].user_project_history,
 		user_job_vetos: updatedProfile[0].user_job_vetos,
+		user_focus: updatedProfile[0].user_focus,
 	};
 }

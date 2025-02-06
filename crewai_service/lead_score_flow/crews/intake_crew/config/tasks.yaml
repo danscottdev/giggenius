@@ -1,6 +1,20 @@
+technical_intake_analysis_task:
+  description: >
+    Using your extensive technical expertise in {user_focus}, analyze the provided project request.
+    Determine if the project request contains enough information so that an industry professional can provide a reasonable estimate of the project's technical complexity.
+
+    Your output should be a boolean TRUE/FALSE value.
+    Return FALSE if the project request is excessively short or vague, or does not contain a reasonable amount of detail.
+    Otherwise, return TRUE.
+
+    Analyze this project request from a technical perspective: {job_info}
+  expected_output: >
+    A JSON object following the following structure:
+    - complete_description: A boolean TRUE/FALSE value.
+
 technical_analysis_task:
   description: >
-    Analyze the provided job description from a technical perspective.
+    Using your technical expertise, analyze the provided project request to extract and summarize key technical requirements and responsibilities.
             
     1. Identify the key technical requirements and skills
     2. Determine the primary tech stack and tools
@@ -13,9 +27,8 @@ technical_analysis_task:
 
     Return your analysis in a clear, structured format.
 
-    Analyze this job description from a technical perspective: {job_info}
+    Analyze this project request from a technical perspective: {job_info}
   expected_output: >
-    A structured summary of the Job Description, including:
-    - Key Technical Requirements
-    - Primary Tech Stack
-    - Technical Responsibilities
+    A JSON object following the following structure:
+    - complete_description: (THIS WILL BE PROVIDED BY THE TECHNICAL INTAKE ANALYST)
+    - technical_analysis: A structured summary of the Project Request, including: Key Technical Requirements, Primary Tech Stack, Technical Responsibilities

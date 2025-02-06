@@ -40,12 +40,14 @@ async def process_task(task: MatchProcessingTask) -> None:
 
         user = await fetch_user(task.user_id)
         candidate_data = user["user_summary"]
+        user_focus = user["user_focus"]
 
         inputs = {
             "candidate_data": candidate_data,
             "job_info": f"JOB TITLE: {parsed_job['title']}\n\nJOB DESCRIPTION: {parsed_job['description']}",
             "red_flag_criteria": user["user_job_vetos"],
             "client_info": f"CLIENT LOCATION: {client_info['client_location']}\n\nCLIENT RATING: {client_info['client_rating']}\n\nCLIENT TOTAL SPEND: {client_info['client_spend']}\n\nCLIENT PAYMENT VERIFIED?: {client_info['payment_verified']}",
+            "user_focus": user_focus,
         }
 
         # logger.info("!!!!Inputs: " + json.dumps(inputs))

@@ -109,7 +109,7 @@ export default function UserProfileForm({
 		const commonProps = {
 			id: name,
 			name: name,
-			value: profile[name],
+			value: profile[name] || "",
 			onChange: handleChange,
 			className: cn(
 				isChanged && "border-orange-500 focus-visible:ring-orange-500"
@@ -128,7 +128,7 @@ export default function UserProfileForm({
 					</Label>
 				</div>
 				{Component === Input ? (
-					<Input {...commonProps} />
+					<Input type="text" {...commonProps} />
 				) : (
 					<Textarea {...commonProps} />
 				)}
@@ -143,7 +143,7 @@ export default function UserProfileForm({
 					<TabsTrigger value="basic">
 						Basic Info
 						{Array.from(changedFields).some((field) =>
-							["user_name", "user_summary"].includes(field)
+							["user_name", "user_focus", "user_summary"].includes(field)
 						) && <AlertCircle className="ml-2 h-4 w-4 text-orange-500" />}
 					</TabsTrigger>
 					<TabsTrigger value="skills">
@@ -170,6 +170,10 @@ export default function UserProfileForm({
 						</CardHeader>
 						<CardContent className="space-y-6">
 							{renderField("user_name", "Name", Input)}
+							{renderField("user_focus", "Area of Focus", Input, {
+								placeholder:
+									"e.g., Full Stack Development, DevOps, Mobile Development",
+							})}
 							{renderField("user_summary", "Professional Summary", Textarea, {
 								rows: 4,
 								placeholder:

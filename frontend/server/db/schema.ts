@@ -58,6 +58,7 @@ export const userProfilesTable = pgTable("userProfiles", {
 	user_skills: text("skills").notNull(),
 	user_project_history: text("project_history").notNull(),
 	user_job_vetos: text("job_vetos").notNull(),
+	user_focus: text("user_focus").default(""),
 });
 
 // One job can have many matches
